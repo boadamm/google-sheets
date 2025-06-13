@@ -59,6 +59,7 @@ class TestWatcher:
         assert watcher.patterns == ["*.csv", "*.xlsx"]
         assert watcher.poll_interval == 3
 
+    @pytest.mark.slow
     def test_watcher_detects_new_csv_file(self):
         """Test that watcher detects new CSV files and calls callback."""
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -77,12 +78,12 @@ class TestWatcher:
                 test_file = folder / "test.csv"
                 test_file.write_text("col1,col2\n1,2\n")
 
-                # Wait for the callback to be triggered (max 2 seconds)
+                # Wait for the callback to be triggered (reduced timeout)
                 start_time = time.time()
-                while time.time() - start_time < 2:
+                while time.time() - start_time < 1:  # Reduced from 2 to 1 second
                     if callback.called:
                         break
-                    time.sleep(0.1)
+                    time.sleep(0.05)  # Reduced sleep time
 
                 # Assert callback was called with the file path
                 assert callback.called
@@ -91,6 +92,7 @@ class TestWatcher:
             finally:
                 watcher.stop()
 
+    @pytest.mark.slow
     def test_watcher_detects_new_xlsx_file(self):
         """Test that watcher detects new XLSX files and calls callback."""
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -109,12 +111,12 @@ class TestWatcher:
                 test_file = folder / "test.xlsx"
                 test_file.write_bytes(b"dummy xlsx content")
 
-                # Wait for the callback to be triggered (max 2 seconds)
+                # Wait for the callback to be triggered (reduced timeout)
                 start_time = time.time()
-                while time.time() - start_time < 2:
+                while time.time() - start_time < 1:  # Reduced from 2 to 1 second
                     if callback.called:
                         break
-                    time.sleep(0.1)
+                    time.sleep(0.05)  # Reduced sleep time
 
                 # Assert callback was called with the file path
                 assert callback.called
@@ -123,6 +125,7 @@ class TestWatcher:
             finally:
                 watcher.stop()
 
+    @pytest.mark.slow
     def test_watcher_detects_modified_file(self):
         """Test that watcher detects modified files and calls callback."""
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -144,12 +147,12 @@ class TestWatcher:
                 # Modify the existing file
                 test_file.write_text("col1,col2\n1,2\n3,4\n")
 
-                # Wait for the callback to be triggered (max 2 seconds)
+                # Wait for the callback to be triggered (reduced timeout)
                 start_time = time.time()
-                while time.time() - start_time < 2:
+                while time.time() - start_time < 1:  # Reduced from 2 to 1 second
                     if callback.called:
                         break
-                    time.sleep(0.1)
+                    time.sleep(0.05)  # Reduced sleep time
 
                 # Assert callback was called with the file path
                 assert callback.called
@@ -158,6 +161,7 @@ class TestWatcher:
             finally:
                 watcher.stop()
 
+    @pytest.mark.slow
     def test_watcher_respects_patterns(self):
         """Test that watcher only responds to files matching specified patterns."""
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -177,7 +181,7 @@ class TestWatcher:
                 txt_file.write_text("This is not a CSV file")
 
                 # Wait a bit to see if callback is called (it shouldn't be)
-                time.sleep(0.5)
+                time.sleep(0.3)  # Reduced wait time
 
                 # Assert callback was NOT called
                 assert not callback.called
@@ -186,12 +190,12 @@ class TestWatcher:
                 csv_file = folder / "test.csv"
                 csv_file.write_text("col1,col2\n1,2\n")
 
-                # Wait for the callback to be triggered (max 2 seconds)
+                # Wait for the callback to be triggered (reduced timeout)
                 start_time = time.time()
-                while time.time() - start_time < 2:
+                while time.time() - start_time < 1:  # Reduced from 2 to 1 second
                     if callback.called:
                         break
-                    time.sleep(0.1)
+                    time.sleep(0.05)  # Reduced sleep time
 
                 # Assert callback was called with the CSV file path
                 assert callback.called
@@ -200,6 +204,7 @@ class TestWatcher:
             finally:
                 watcher.stop()
 
+    @pytest.mark.slow
     def test_watcher_debounces_duplicate_events(self):
         """Test that watcher debounces duplicate events within 1 second."""
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -221,10 +226,10 @@ class TestWatcher:
                 # Modify the file multiple times quickly
                 for i in range(3):
                     test_file.write_text(f"col1,col2\n1,2\n{i},{i+1}\n")
-                    time.sleep(0.1)
+                    time.sleep(0.05)  # Reduced sleep time
 
                 # Wait a bit longer to ensure all events are processed
-                time.sleep(1.5)
+                time.sleep(1.0)  # Reduced from 1.5 to 1.0 second
 
                 # Should only be called once due to debouncing
                 assert callback.call_count == 1

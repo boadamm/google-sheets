@@ -297,21 +297,21 @@ with patch('cli.SheetsClient') as mock_client_class:
         finally:
             Path(temp_path).unlink(missing_ok=True)
 
-    def test_cli_watch_mode_not_implemented(self):
-        """Test CLI exits with error code 1 when --watch flag is used."""
+    def test_cli_watch_mode_with_test_flag(self):
+        """Test CLI watch mode with --test-mode flag exits quickly."""
         result = subprocess.run(
-            [sys.executable, "cli.py", "--file", "samples/data.csv", "--watch"],
+            [sys.executable, "cli.py", "--watch", "--test-mode"],
             capture_output=True,
             text=True,
         )
 
-        # Should exit with error code
-        assert result.returncode == 1, f"Expected exit code 1, got {result.returncode}"
+        # Should exit successfully in test mode
+        assert result.returncode == 0, f"Expected exit code 0, got {result.returncode}"
 
-        # Should contain watch mode error message in stderr
+        # Should contain expected output
         assert (
-            "--watch mode is not yet implemented" in result.stderr
-        ), f"Expected watch mode error in stderr: {result.stderr}"
+            "Watching folder:" in result.stdout or "No files found to process" in result.stdout
+        ), f"Expected watch mode output in stdout: {result.stdout}"
 
     def test_cli_handles_unsupported_file_type_error(self):
         """Test CLI exits with code 1 and prints error for unsupported file types."""
