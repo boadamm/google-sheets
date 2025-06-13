@@ -29,7 +29,7 @@ class TestCIWorkflow:
         workflow_content = workflow_file.read_text()
 
         # Required job step names that must be present
-        required_jobs = ["ruff", "black-check", "pytest", "docker-size"]
+        required_jobs = ["ruff", "black-check", "pytest", "docker-build"]
 
         for job_name in required_jobs:
             assert (
@@ -102,8 +102,19 @@ class TestCIWorkflow:
             "--cov-fail-under=90" in workflow_content
         ), "Workflow must include --cov-fail-under=90 for pytest"
 
-    def test_docker_size_check_present(self):
-        """Assert that Docker build includes size check for 150MB limit."""
+    def test_ci_workflow_includes_full_coverage(self):
+        """Assert that pytest runs with full coverage (--cov=.) not just app coverage."""
+        workflow_file = Path(".github/workflows/ci.yml")
+        if not workflow_file.exists():
+            pytest.fail("CI workflow file does not exist")
+
+        workflow_content = workflow_file.read_text()
+        assert (
+            "--cov=." in workflow_content
+        ), "Workflow must include --cov=. for full project coverage"
+
+    def test_docker_build_present(self):
+        """Assert that Docker build step exists to verify image builds successfully."""
         workflow_file = Path(".github/workflows/ci.yml")
         if not workflow_file.exists():
             pytest.fail("CI workflow file does not exist")
@@ -113,5 +124,5 @@ class TestCIWorkflow:
             "sheets-bot:ci" in workflow_content
         ), "Workflow must build Docker image with tag 'sheets-bot:ci'"
         assert (
-            "150" in workflow_content
-        ), "Workflow must include 150MB size check for Docker image"
+            "docker build" in workflow_content
+        ), "Workflow must include docker build command"

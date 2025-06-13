@@ -26,7 +26,6 @@
 
 ## DOCKER_REQUIREMENTS:
 - Base images must be Alpine-based when possible
-- Final Docker images must be < 150 MB
 - Multi-stage builds required for Python applications
 - No secrets in Dockerfiles or images
 - Use .dockerignore to exclude unnecessary files

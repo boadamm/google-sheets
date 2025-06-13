@@ -1,5 +1,5 @@
 # .dockerignore - Exclude unnecessary files to keep Docker image minimal
-# Following .cursorrules: Docker images must be < 150MB
+# Following .cursorrules: Optimize Docker image size
 
 # Git and version control
 .git
