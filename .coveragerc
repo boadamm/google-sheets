@@ -1,9 +1,14 @@
 [run]
-source = app
+source = app, cli.py, scripts
 omit = 
     app/watcher_demo.py
+    app/gui/*
+    build/*
+    shibokensupport/*
     */tests/*
     */__pycache__/*
+    test_script.py
+    signature_bootstrap.py
 
 [report]
 exclude_lines =
