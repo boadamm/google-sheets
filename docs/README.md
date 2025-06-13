@@ -192,9 +192,122 @@ docker run --rm -v $(pwd)/samples:/app/samples sheets-bot \
 docker run --rm -it sheets-bot /bin/sh
 ```
 
+## Google Sheets Setup (Free Tier)
+
+Complete these steps to enable Google Sheets integration with your bot using a Service Account:
+
+### 1. Enabling the Google Sheets API
+
+1. **Go to the Google Cloud Console**: Visit [console.cloud.google.com](https://console.cloud.google.com/)
+2. **Create or select a project**: Click the project dropdown and create a new project or select an existing one
+3. **Enable the API**: 
+   - Navigate to "APIs & Services" → "Library"
+   - Search for "Google Sheets API"
+   - Click on it and press "Enable"
+
+### 2. Create Service Account
+
+1. **Navigate to Service Accounts**:
+   - Go to "APIs & Services" → "Credentials"
+   - Click "Create Credentials" → "Service Account"
+
+2. **Configure the Service Account**:
+   - **Service account name**: `sheets-bot-service`
+   - **Service account ID**: Will auto-generate (e.g., `sheets-bot-service@your-project.iam.gserviceaccount.com`)
+   - **Description**: `Service account for sheets-bot CSV/XLSX processing`
+   - Click "Create and Continue"
+
+3. **Set Roles** (Optional for basic usage):
+   - You can skip role assignment for simple spreadsheet access
+   - Click "Continue" then "Done"
+
+### 3. Generate and Download JSON Key
+
+1. **Create the key**:
+   - Find your service account in the list
+   - Click on the service account email
+   - Go to the "Keys" tab
+   - Click "Add Key" → "Create new key"
+   - Select "JSON" format
+   - Click "Create"
+
+2. **Complete the process by downloading the JSON key**:
+   - The JSON file downloads automatically after creation
+   - This contains your private key - keep it secure!
+
+### 4. Save creds.json
+
+1. **Move the downloaded file** to your project:
+   ```bash
+   # Rename and move your downloaded file to:
+   mv ~/Downloads/your-project-xxxxx-xxxxxxx.json config/creds.json
+   ```
+
+2. **Verify the file structure** matches this format:
+   ```json
+   {
+     "type": "service_account",
+     "project_id": "your-project-id",
+     "private_key_id": "...",
+     "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
+     "client_email": "your-service-account@your-project.iam.gserviceaccount.com",
+     "client_id": "...",
+     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+     "token_uri": "https://oauth2.googleapis.com/token",
+     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+     "client_x509_cert_url": "..."
+   }
+   ```
+
+### 5. Share the Sheet
+
+1. **Create or open your Google Sheet**: Go to [sheets.google.com](https://sheets.google.com)
+2. **Share with the Service Account**:
+   - Click the "Share" button (top-right)
+   - Add the service account email: `your-service-account@your-project.iam.gserviceaccount.com`
+   - Set permission to "Editor"
+   - **Important**: Uncheck "Notify people" to avoid sending an email
+   - Click "Share"
+
+3. **Get the Sheet ID**:
+   - Copy the sheet URL: `https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit#gid=0`
+   - Extract the `YOUR_SHEET_ID` part
+   - Update `config/settings.toml`:
+     ```toml
+     [sheets]
+     spreadsheet_id = "YOUR_SHEET_ID"
+     worksheet_name = "Sheet1"
+     ```
+
+### 6. Verify Access
+
+Test your setup with the CLI push command:
+
+```bash
+python cli.py --file samples/data.csv --push
+```
+
+**Expected output**:
+```
+Data pushed to: https://docs.google.com/spreadsheets/d/your-sheet-id/edit#gid=0
+```
+
+### Troubleshooting
+
+**Common Issues and Solutions**:
+
+- **`APIError: 403 — share sheet with SA email`**: The service account doesn't have access to your spreadsheet. Make sure you shared the sheet with the service account email address with Editor permissions.
+
+- **`FileNotFoundError: config/creds.json`**: The credentials file is missing. Double-check that you saved the downloaded JSON file as `config/creds.json`.
+
+- **`ValueError: Invalid JSON in credentials file`**: The JSON file is corrupted or incomplete. Re-download the service account key from Google Cloud Console.
+
+- **`APIError: 400 — Invalid spreadsheet ID`**: Check that the `spreadsheet_id` in `config/settings.toml` matches your actual Google Sheet ID from the URL.
+
+- **`APIError: 404 — Spreadsheet not found`**: The spreadsheet ID is correct, but the service account doesn't have access. Verify sharing permissions.
+
 ## Next Steps
 
-- **Google Sheets Integration**: Configure `config/settings.toml` for spreadsheet uploads
 - **Slack Notifications**: Set up webhook URLs for automated alerts  
 - **Custom Processing**: Extend `app/parser.py` for domain-specific data cleaning
 - **Scheduling**: Use cron or systemd for automated processing

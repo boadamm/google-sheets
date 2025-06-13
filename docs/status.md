@@ -373,3 +373,107 @@ print(f"Data pushed to: {url}")
 - Integration of sheets client with file watcher for automated processing
 - End-to-end workflow: watch → parse → push to sheets
 - Slack notification system for processing events
+
+## Sprint 3 – T7 CLI push flag added
+
+**Date**: $(date +'%Y-%m-%d')  
+**Status**: ✅ COMPLETED
+
+### Completed Tasks:
+- [x] Created comprehensive failing tests in `tests/test_cli_push.py` following TDD principles
+- [x] Extended `cli.py` with `--push / --no-push` flag functionality:
+  - Default `--no-push` preserves existing behavior (print DataFrame to stdout)
+  - `--push` flag integrates with SheetsClient to upload cleaned DataFrame
+  - Proper error handling for SheetsPushError and file parsing errors
+  - Returns worksheet URL on successful push
+  - Maintains all existing CLI functionality and help text
+- [x] Added comprehensive test coverage for all push scenarios:
+  - Successful push operations with CSV and XLSX files
+  - DataFrame structure validation in push calls
+  - Error handling for invalid credentials and API failures
+  - File parsing error handling in push mode
+  - Backward compatibility with existing --no-push behavior
+- [x] Updated `README.md` quick-start section with `--push` examples
+- [x] Ensured all quality gates pass: 90% test coverage, ruff clean, black formatted
+
+### CLI Push Implementation Features:
+- **Backward Compatibility**: `--no-push` (default) maintains exact existing behavior
+- **Sheets Integration**: `--push` parses file and uploads DataFrame to Google Sheets
+- **Error Handling**: Graceful handling of credentials, API, and file parsing errors
+- **URL Return**: Prints worksheet URL after successful data upload
+- **Test Coverage**: Comprehensive mocking for subprocess-based CLI testing
+- **Command Interface**: Help text updated to include push functionality
+
+### Quality Status:
+- ✅ All 13 CLI push tests pass (100% success rate)
+- ✅ Test coverage: 90% for cli.py (meets requirement)
+- ✅ All 88 existing tests remain green (100% pass rate)
+- ✅ Ruff linting: Zero issues
+- ✅ Black formatting: Compliant
+- ✅ TDD methodology: Tests written first, then implementation
+
+### Technical Implementation:
+```bash
+# Existing behavior preserved:
+python cli.py --file samples/data.csv --once
+python cli.py --file samples/data.xlsx --no-push
+
+# New push functionality:
+python cli.py --file samples/data.csv --push
+python cli.py --file samples/data.xlsx --push
+
+# Sample output with --push:
+Data pushed to: https://docs.google.com/spreadsheets/d/your-sheet-id/edit#gid=0
+```
+
+### Files Created/Modified:
+- `cli.py` - Extended with push functionality (48 statements, 90% coverage)
+- `tests/test_cli_push.py` - Comprehensive CLI push test suite (13 tests)
+- `README.md` - Updated quick-start with --push examples
+- `docs/status.md` - This status update
+
+### Next Sprint:
+- End-to-end workflow: watch → parse → push integration
+- Slack notification system for processing events
+- Production deployment configuration
+
+## Sprint 3 – T8 service-account docs finished
+
+**Date**: $(date +'%Y-%m-%d')  
+**Status**: ✅ COMPLETED
+
+### Completed Tasks:
+- [x] Created failing tests in `tests/test_service_account_docs.py` following TDD principles
+- [x] Updated `docs/README.md` with comprehensive "Google Sheets Setup (Free Tier)" section:
+  - Step-by-step Google Sheets API enabling instructions
+  - Complete Service Account creation and JSON key downloading guide
+  - Detailed spreadsheet sharing instructions with Service Account email
+  - Configuration of `config/creds.json` with proper file structure
+  - Verification command using `python cli.py --file samples/data.csv --push`
+  - Comprehensive troubleshooting section covering common APIError scenarios
+- [x] Added Sprint 3 T8 entry to `docs/status.md` for project tracking
+- [x] Ensured all quality gates pass: `ruff .`, `black --check .`, and `pytest -q`
+
+### Documentation Features Added:
+- **Complete Setup Guide**: 6-step process from API enabling to verification
+- **Visual Structure**: Clear headings for "Create Service Account", "Share the Sheet", and "Save creds.json"  
+- **Troubleshooting Section**: Covers APIError 403, file path issues, JSON validation, and permission problems
+- **Security Best Practices**: Guidance on private key handling and service account permissions
+- **Verification Process**: End-to-end testing with sample data push to Google Sheets
+
+### Quality Status:
+- ✅ All 8 service account documentation tests pass
+- ✅ Documentation contains all required headings and verification commands
+- ✅ Ruff linting: Zero issues
+- ✅ Black formatting: Compliant  
+- ✅ TDD methodology: Tests written first, documentation implemented to pass
+
+### Files Modified:
+- `tests/test_service_account_docs.py` - Comprehensive test suite for documentation requirements
+- `docs/README.md` - Added Google Sheets Setup section with troubleshooting
+- `docs/status.md` - This status update entry
+
+### Next Sprint:
+- End-to-end workflow: watch → parse → push integration
+- Slack notification system for processing events
+- Production deployment configuration

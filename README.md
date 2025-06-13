@@ -38,7 +38,7 @@ pip install pre-commit && pre-commit install
 2. **Implement functionality** to make tests pass
 3. **Run quality checks**:
    ```bash
-   ruff .                    # Linting
+   ruff check .             # Linting
    black --check .          # Formatting check
    pytest --cov=. --cov-report=term-missing  # Tests with coverage
    ```
@@ -52,6 +52,10 @@ python cli.py --file samples/data.csv --once
 
 # Parse an Excel file and display cleaned DataFrame  
 python cli.py --file samples/data.xlsx --once
+
+# Parse and push to Google Sheets
+python cli.py --file samples/data.csv --push
+python cli.py --file samples/data.xlsx --push
 ```
 
 **Sample Output:**
@@ -60,6 +64,11 @@ python cli.py --file samples/data.xlsx --once
    John Doe   30    New York
  Jane Smith   25 Los Angeles
 Bob Johnson   35     Chicago
+```
+
+**Sample Output with --push:**
+```
+Data pushed to: https://docs.google.com/spreadsheets/d/your-sheet-id/edit#gid=0
 ```
 
 #### File Watcher Demo
@@ -86,6 +95,7 @@ sheets-bot/
 ├── .cursorrules         # Development guidelines
 ├── app/                 # Application source code
 │   ├── watcher.py       # File monitoring system
+│   ├── sheets_client.py # Google Sheets integration
 │   └── watcher_demo.py  # Demo script
 ├── config/
 │   └── settings.toml    # Configuration file
@@ -98,6 +108,7 @@ sheets-bot/
 - **Conda Environment**: Reproducible development setup with pinned dependencies
 - **Quality Gates**: Black, Ruff, pytest with 90%+ coverage requirement
 - **TDD/BDD**: Test-first development approach
+- **Google Sheets Integration**: Push DataFrames directly to Google Sheets
 - **WSL Optimized**: Tested on Ubuntu WSL with Miniconda
 
 ## Requirements
