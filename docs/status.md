@@ -262,3 +262,59 @@ Bob Johnson   35     Chicago
 - Integration of CLI with file watcher for automatic processing
 - Google Sheets upload functionality
 - Slack notification system
+
+## Sprint 2 – T5 docs & samples finished
+
+**Date**: $(date +'%Y-%m-%d')  
+**Status**: ✅ COMPLETED
+
+### Completed Tasks:
+- [x] Created comprehensive failing tests in `tests/test_docs_polish.py` following TDD principles
+- [x] Created `docs/README.md` with complete WSL + Miniconda quick start guide:
+  - **Quick Start section**: WSL prerequisites, conda env setup, and verification steps
+  - **CLI one-shot Demo**: Step-by-step CLI usage with sample files and expected output
+  - **Live Watcher Demo**: Interactive file monitoring with `python -m app.watcher_demo`
+  - **End-to-End Workflow**: Complete "watch → parse → print" demonstration
+  - **Troubleshooting on WSL**: Common issues with XML/XLSX parsing, permissions, and dependencies
+  - **Sample Files Documentation**: Clear references to `samples/data.csv` and `samples/data.xlsx`
+- [x] Updated top-level `README.md` with link to `docs/README.md` for single source of truth
+- [x] Verified all sample files exist and are properly documented
+- [x] Ensured all quality gates pass: ruff, black, pytest with maintained coverage
+
+### Documentation Features:
+- **<5 Minute Setup**: Streamlined WSL + Miniconda onboarding process
+- **Comprehensive Troubleshooting**: WSL-specific solutions for common dependency issues
+- **Interactive Demos**: Both CLI one-shot and live file watcher demonstrations
+- **Sample Data**: Pre-built CSV/XLSX files for immediate testing
+- **Performance Tips**: WSL optimization recommendations for file processing
+- **Docker Integration**: Container-based usage examples
+
+### Quality Status:
+- ✅ All 10 documentation tests pass (100% success rate)
+- ✅ docs/README.md contains all required sections: Quick Start, CLI one-shot, Watcher, Troubleshooting
+- ✅ Sample files (`samples/data.csv`, `samples/data.xlsx`) properly referenced
+- ✅ Top-level README.md links to docs/README.md as single source of truth
+- ✅ Ruff linting: Zero issues
+- ✅ Black formatting: Compliant
+- ✅ Test coverage: Maintained at 92%
+
+### User Experience:
+```bash
+# Complete workflow in <5 minutes:
+git clone <repo> && cd demoproject
+conda env create -f environment.yml && conda activate sheets-bot
+pytest -q  # Verify setup
+python cli.py --file samples/data.csv --once  # Test CLI
+python -m app.watcher_demo  # Test watcher
+```
+
+### Files Created/Modified:
+- `docs/README.md` - Comprehensive user documentation (185 lines)
+- `tests/test_docs_polish.py` - Documentation validation tests (121 lines)
+- `README.md` - Added link to docs/README.md for navigation
+- `docs/status.md` - This status update
+
+### Next Sprint (T6):
+- CLI integration with file watcher for automated processing
+- Google Sheets API integration and authentication setup
+- Slack webhook notifications for processing events

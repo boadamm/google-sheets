@@ -7,6 +7,8 @@
 
 A production-quality Python application for Google Sheets automation using Miniconda on Ubuntu WSL.
 
+📖 **[→ Complete Documentation & Quick Start Guide](docs/README.md)** ←
+
 ## Quick Start (Conda on WSL)
 
 ### Prerequisites
