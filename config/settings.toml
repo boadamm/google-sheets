@@ -10,4 +10,6 @@ worksheet_name = "Sheet1"  # Default worksheet name
 webhook_url = "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"  # Replace with actual Slack webhook URL
 
 [watcher]
-folder = "./watch"  # Directory to monitor for file changes 
+folder = "./watch"  # Directory to monitor for file changes
+patterns = ["*.csv", "*.xlsx"]  # File patterns to watch for
+poll_interval = 5  # Polling interval in seconds 

@@ -41,15 +41,37 @@ pip install pre-commit && pre-commit install
    pytest --cov=. --cov-report=term-missing  # Tests with coverage
    ```
 
+### Usage Examples
+
+#### File Watcher Demo
+```bash
+# Run the interactive file watcher demo
+python -m app.watcher_demo
+
+# Monitor files programmatically
+python -c "
+from app.watcher import Watcher
+from pathlib import Path
+
+def callback(path): print(f'File detected: {path}')
+w = Watcher(); w.start(callback)
+# Watcher runs in background...
+"
+```
+
 ### Project Structure
 
 ```
 sheets-bot/
 ├── environment.yml       # Conda environment specification
 ├── .cursorrules         # Development guidelines
+├── app/                 # Application source code
+│   ├── watcher.py       # File monitoring system
+│   └── watcher_demo.py  # Demo script
+├── config/
+│   └── settings.toml    # Configuration file
 ├── tests/               # Test suite
-├── docs/                # Documentation
-└── src/                 # Source code (TBD)
+└── docs/                # Documentation
 ```
 
 ## Features
