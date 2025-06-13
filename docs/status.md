@@ -190,6 +190,8 @@ watcher.stop()  # Clean shutdown
 - `app/watcher.py` - Core watcher implementation (173 lines)
 - `tests/test_watcher.py` - Comprehensive test suite (309 lines)
 - `config/settings.toml` - Enhanced with watcher configuration
+- `app/watcher_demo.py` - Interactive demo script
+- `.coveragerc` - Coverage configuration (excludes demo from coverage)
 - `docs/status.md` - This status update
 
 ### Next Sprint (T4):
