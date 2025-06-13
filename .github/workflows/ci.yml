@@ -17,23 +17,6 @@ jobs:
       with:
         python-version: '3.11'
     
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          libgl1-mesa-glx \
-          libegl1-mesa \
-          libxrandr2 \
-          libxss1 \
-          libxcursor1 \
-          libxcomposite1 \
-          libasound2 \
-          libxi6 \
-          libxtst6 \
-          libglib2.0-0 \
-          libxkbcommon-x11-0 \
-          xvfb
-    
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -46,9 +29,9 @@ jobs:
       run: black --check .
     
     - name: pytest
-      run: |
-        # Run pytest with virtual display for Qt tests
-        xvfb-run -a -s "-screen 0 1024x768x24" pytest -q --cov=. --cov-fail-under=90
+      env:
+        QT_QPA_PLATFORM: offscreen
+      run: pytest -q --cov=. --cov-fail-under=90
     
     - name: docker-build
       run: |
