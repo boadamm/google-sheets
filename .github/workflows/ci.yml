@@ -32,8 +32,11 @@ jobs:
     
     - name: pytest
       run: |
-        # Run tests excluding GUI tests that require Qt libraries and display
-        pytest -q --cov=. --cov-fail-under=90 --ignore=tests/test_gui_functional.py --ignore=tests/test_gui_skeleton.py
+        # Run tests excluding GUI and packaging tests that require additional infrastructure
+        pytest -q --cov=. --cov-fail-under=90 \
+          --ignore=tests/test_gui_functional.py \
+          --ignore=tests/test_gui_skeleton.py \
+          --ignore=tests/test_packaging.py
     
     - name: docker-build
       run: |

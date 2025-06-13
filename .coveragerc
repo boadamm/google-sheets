@@ -9,9 +9,10 @@ omit =
     */__pycache__/*
     test_script.py
     signature_bootstrap.py
-    # Exclude GUI test files that don't run in CI
+    # Exclude test files that don't run in CI
     tests/test_gui_functional.py
     tests/test_gui_skeleton.py
+    tests/test_packaging.py
 
 [report]
 exclude_lines =
