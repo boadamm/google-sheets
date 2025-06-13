@@ -17,10 +17,12 @@ jobs:
       with:
         python-version: '3.11'
     
-    - name: Install dependencies
+    - name: Install dependencies (exclude pytest-qt for CI)
       run: |
         python -m pip install --upgrade pip
+        # Install requirements excluding pytest-qt to avoid GUI dependencies in CI
         pip install -r requirements.txt
+        pip uninstall -y pytest-qt
     
     - name: ruff
       run: ruff check .
@@ -30,8 +32,7 @@ jobs:
     
     - name: pytest
       run: |
-        # Run tests with pytest-qt plugin disabled to avoid GUI dependencies
-        pytest -q --cov=. --cov-fail-under=90 -p no:qt
+        pytest -q --cov=. --cov-fail-under=90
     
     - name: docker-build
       run: |
