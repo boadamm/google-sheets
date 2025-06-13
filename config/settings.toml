@@ -1,0 +1,13 @@
+# sheets-bot Configuration File
+# This file contains configuration settings for the sheets-bot application
+# Generated from project scaffold requirements
+
+[sheets]
+spreadsheet_id = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"  # Example Google Sheets ID
+worksheet_name = "Sheet1"  # Default worksheet name
+
+[slack]
+webhook_url = "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"  # Replace with actual Slack webhook URL
+
+[watcher]
+folder = "./watch"  # Directory to monitor for file changes 

@@ -1,0 +1,59 @@
+name: CI Pipeline
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: ruff
+      run: ruff check .
+    
+    - name: black-check
+      run: black --check .
+    
+    - name: pytest
+      run: pytest -q --cov=app --cov-fail-under=90
+    
+    - name: docker-size
+      run: |
+        # Build Docker image with quiet output
+        docker build --quiet -t sheets-bot:ci .
+        
+        # Get image size in bytes and convert to MB
+        SIZE_BYTES=$(docker image inspect sheets-bot:ci --format='{{.Size}}')
+        SIZE_MB=$((SIZE_BYTES / 1024 / 1024))
+        
+        echo "Docker image size: ${SIZE_MB} MB"
+        
+        # Fail if image is larger than 150 MB
+        if [ $SIZE_MB -gt 150 ]; then
+          echo "ERROR: Docker image size (${SIZE_MB} MB) exceeds 150 MB limit"
+          exit 1
+        else
+          echo "SUCCESS: Docker image size (${SIZE_MB} MB) is within 150 MB limit"
+        fi
+    
+    - name: Upload coverage artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: coverage-report
+        path: .coverage
+        retention-days: 30 
