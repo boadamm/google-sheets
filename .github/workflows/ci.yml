@@ -29,9 +29,9 @@ jobs:
       run: black --check .
     
     - name: pytest
-      env:
-        QT_QPA_PLATFORM: offscreen
-      run: pytest -q --cov=. --cov-fail-under=90
+      run: |
+        # Run tests with pytest-qt plugin disabled to avoid GUI dependencies
+        pytest -q --cov=. --cov-fail-under=90 -p no:qt
     
     - name: docker-build
       run: |
