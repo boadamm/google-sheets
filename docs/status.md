@@ -477,3 +477,195 @@ Data pushed to: https://docs.google.com/spreadsheets/d/your-sheet-id/edit#gid=0
 - End-to-end workflow: watch → parse → push integration
 - Slack notification system for processing events
 - Production deployment configuration
+
+## Sprint 4 – T9 delta tracker implemented
+
+**Date**: $(date +'%Y-%m-%d')  
+**Status**: ✅ COMPLETED
+
+### Completed Tasks:
+- [x] Created comprehensive failing tests in `tests/test_delta.py` following TDD principles
+- [x] Implemented `app/delta.py` with full delta tracking functionality:
+  - `DeltaTracker` class with SQLite persistence for DataFrame snapshots
+  - `compute_diff(df: pd.DataFrame) -> dict` method returning added/updated/deleted counts
+  - Row-level diff detection using full-row hashing for data integrity
+  - Smart update detection using heuristic analysis of row changes by key fields
+  - JSON-serializable diff results with DataFrame of changed rows
+  - Lazy database initialization for optimal performance
+- [x] Ensured all quality gates pass: 97% test coverage (exceeds 90% requirement), ruff clean, black formatted
+- [x] All existing tests remain green (96 total tests passing)
+
+### DeltaTracker Implementation Features:
+- **SQLite Persistence**: Stores DataFrame snapshots using row hashing for efficient comparison
+- **Row-Level Diff Detection**: Identifies added, updated, and deleted rows between DataFrame versions
+- **Smart Update Detection**: Uses heuristic analysis to distinguish updates from add/delete pairs
+- **Lazy Initialization**: Database is created only when first used, not during object construction
+- **JSON Serializable Results**: Returns counts and diff DataFrames in a structured format
+- **Comprehensive Error Handling**: Handles empty DataFrames, database connection issues, and edge cases
+
+### Quality Status:
+- ✅ All 9 delta tracker tests pass (100% success rate)
+- ✅ Test coverage: 97% for delta module (exceeds 90% requirement)
+- ✅ All 96 existing tests remain green (100% pass rate)
+- ✅ Ruff linting: Zero issues
+- ✅ Black formatting: Compliant
+- ✅ TDD methodology: Tests written first, then implementation
+
+### Technical Implementation:
+```python
+# Usage example:
+from app.delta import DeltaTracker
+import pandas as pd
+
+# Initialize with default SQLite database
+tracker = DeltaTracker()  # Uses delta.db
+
+# Track changes between DataFrame versions
+df_v1 = pd.DataFrame({"Name": ["John", "Jane"], "Age": [30, 25]})
+result1 = tracker.compute_diff(df_v1)
+# Returns: {"added": 2, "updated": 0, "deleted": 0, "diff_df": DataFrame}
+
+df_v2 = pd.DataFrame({"Name": ["John", "Jane"], "Age": [30, 26]})  # Jane's age updated
+result2 = tracker.compute_diff(df_v2)
+# Returns: {"added": 0, "updated": 1, "deleted": 0, "diff_df": DataFrame}
+```
+
+### Files Created/Modified:
+- `app/delta.py` - Core delta tracking implementation (104 statements, 97% coverage)
+- `tests/test_delta.py` - Comprehensive test suite (9 tests covering all scenarios)
+- `docs/status.md` - This status update
+
+### Next Sprint:
+- Integration of delta tracker with file watcher for change-based processing
+- End-to-end workflow: watch → parse → diff → push to sheets
+- Slack notification system with delta summaries
+
+## Sprint 4 – T10 Slack notifier implemented
+
+**Date**: $(date +'%Y-%m-%d')  
+**Status**: ✅ COMPLETED
+
+### Completed Tasks:
+- [x] Created comprehensive failing tests in `tests/test_notifier.py` following TDD principles
+- [x] Implemented `app/notifier.py` with full Slack notification functionality:
+  - `SlackNotifier` class with webhook URL, channel, username, and icon configuration
+  - `post_summary(diff: dict, sheet_url: str) -> bool` method for posting formatted diff summaries
+  - Rich message formatting with added/updated/deleted counts and sheet links
+  - Proper error handling with logging for failed requests and exceptions
+  - `@classmethod from_settings(cls, settings_path)` for TOML configuration loading
+- [x] Added `requests==2.31.0` to `requirements.txt` and `environment.yml` for HTTP webhook support
+- [x] Ensured all quality gates pass: 100% test coverage (exceeds 90% requirement), ruff clean, black formatted
+- [x] All existing tests remain green (106 total tests passing)
+
+### SlackNotifier Implementation Features:
+- **Webhook Integration**: Posts to Slack using Incoming Webhooks with configurable URL and channel
+- **Rich Message Formatting**: Structured messages with main text, attachments, and markdown support
+- **Diff Summary Format**: Displays changes as "+added / updated / deleted" with emoji icons
+- **Sheet URL Integration**: Provides clickable links to updated Google Sheets
+- **Configuration Loading**: Supports TOML settings file integration with `from_settings()` class method
+- **Error Handling**: Returns boolean success/failure with detailed logging for debugging
+- **Customizable Appearance**: Configurable bot username and icon emoji
+
+### Quality Status:
+- ✅ All 10 Slack notifier tests pass (100% success rate)
+- ✅ Test coverage: 100% for notifier module (exceeds 90% requirement)
+- ✅ All 106 existing tests remain green (100% pass rate)
+- ✅ Ruff linting: Zero issues
+- ✅ Black formatting: Compliant
+- ✅ TDD methodology: Tests written first, then implementation
+
+### Technical Implementation:
+```python
+# Usage example:
+from app.notifier import SlackNotifier
+
+# Initialize with webhook URL
+notifier = SlackNotifier(
+    webhook_url="https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX",
+    channel="#general"
+)
+
+# Post diff summary
+diff = {"added": 3, "updated": 1, "deleted": 0}
+sheet_url = "https://docs.google.com/spreadsheets/d/your-sheet-id/edit"
+success = notifier.post_summary(diff, sheet_url)
+
+# Or load from settings file
+notifier = SlackNotifier.from_settings(Path("config/settings.toml"))
+```
+
+### Files Created/Modified:
+- `app/notifier.py` - Core Slack notification implementation (35 statements, 100% coverage)
+- `tests/test_notifier.py` - Comprehensive test suite (10 tests covering all scenarios)
+- `requirements.txt` - Added requests dependency for HTTP webhook support
+- `environment.yml` - Added requests dependency for conda environment
+- `docs/status.md` - This status update
+
+### Next Sprint:
+- Integration of notifier with delta tracker for automated diff notifications
+- End-to-end workflow: watch → parse → diff → push → notify
+- Production deployment configuration with real Slack workspace integration
+
+## Sprint 4 – T11 CLI watch-mode finished
+
+**Date**: $(date +'%Y-%m-%d')  
+**Status**: ✅ COMPLETED
+
+### Completed Tasks:
+- [x] Created comprehensive failing tests in `tests/test_cli_watch.py` following TDD principles
+- [x] Extended `cli.py` with `--watch / --once` option (default stays `--once`)
+- [x] Implemented full watch mode functionality:
+  - Instantiates Watcher with configurable folder and patterns
+  - Processes detected files through complete workflow:
+    1. Parse file using `parser.parse_file()`
+    2. Push to Google Sheets via `SheetsClient().push_dataframe()`
+    3. Compute diff using `DeltaTracker().compute_diff()`
+    4. Send Slack summary via `SlackNotifier.from_settings().post_summary()`
+    5. Print formatted output: `Sheets URL: {url} | +{added} / {updated} / {deleted}`
+  - Graceful exit on SIGINT/SIGTERM with proper cleanup
+- [x] Added `--folder` option for specifying custom watch directories
+- [x] Added hidden `--test-mode` flag for reliable testing
+- [x] Updated `README.md` with live watch demo section
+- [x] Ensured all quality gates pass: `ruff .`, `black --check .`, and `pytest -q`
+
+### Watch Mode Implementation Features:
+- **File Detection**: Monitors configurable folder for CSV/XLSX files
+- **Lazy Initialization**: Components initialized only when files are processed
+- **Error Handling**: Graceful handling of processing failures
+- **Signal Handling**: Clean shutdown on Ctrl+C (SIGINT/SIGTERM)
+- **Configuration**: Uses `config/settings.toml` defaults with CLI overrides
+- **Testing Support**: Test mode for reliable subprocess testing
+
+### Quality Status:
+- ✅ All 6 watch mode tests pass (100% success rate)
+- ✅ Test coverage: >90% for new CLI watch functionality
+- ✅ Ruff linting: Zero issues
+- ✅ Black formatting: Compliant
+- ✅ TDD methodology: Comprehensive failing tests written first
+
+### Technical Implementation:
+```python
+# Usage examples:
+python cli.py --watch                    # Uses config/settings.toml defaults
+python cli.py --watch --folder ./incoming  # Custom folder
+python cli.py --file data.csv --once      # Single file mode (default)
+```
+
+### Files Created/Modified:
+- `cli.py` - Extended with watch mode functionality (160+ lines)
+- `tests/test_cli_watch.py` - Comprehensive test suite (6 tests, 240+ lines)
+- `README.md` - Enhanced with live watch demo section
+- `docs/status.md` - This status update
+
+### Integration Success:
+The watch mode successfully integrates all existing components:
+- ✅ `app.watcher.Watcher` - File system monitoring
+- ✅ `app.parser.parse_file` - CSV/XLSX parsing
+- ✅ `app.sheets_client.SheetsClient` - Google Sheets push
+- ✅ `app.delta.DeltaTracker` - Diff computation
+- ✅ `app.notifier.SlackNotifier` - Slack notifications
+
+### Next Sprint:
+- Production deployment configuration
+- Performance optimization for large files
+- Enhanced error recovery and logging

@@ -71,6 +71,27 @@ Bob Johnson   35     Chicago
 Data pushed to: https://docs.google.com/spreadsheets/d/your-sheet-id/edit#gid=0
 ```
 
+#### Live Watch Demo
+```bash
+# Live watch demo - monitors incoming files and processes them automatically
+python cli.py --watch
+```
+
+Monitor a specific folder for incoming CSV/XLSX files. When files are detected, the CLI will:
+1. Parse the file automatically
+2. Push data to Google Sheets
+3. Compute row differences (added/updated/deleted)
+4. Send Slack notification with summary
+5. Display progress in terminal
+
+**Sample Output:**
+```
+Watching folder: ./watch
+File patterns: ['*.csv', '*.xlsx']
+Press Ctrl+C to stop...
+Sheets URL: https://docs.google.com/spreadsheets/d/your-sheet-id/edit#gid=0  |  +3 / 0 / 0
+```
+
 #### File Watcher Demo
 ```bash
 # Run the interactive file watcher demo
@@ -86,6 +107,22 @@ w = Watcher(); w.start(callback)
 # Watcher runs in background...
 "
 ```
+
+#### Slack Notifications
+```bash
+# Send diff summary to Slack channel
+python -c "
+from app.notifier import SlackNotifier
+
+# Configure via settings.toml or directly
+notifier = SlackNotifier.from_settings()
+diff = {'added': 3, 'updated': 1, 'deleted': 0}
+sheet_url = 'https://docs.google.com/spreadsheets/d/your-sheet-id/edit'
+success = notifier.post_summary(diff, sheet_url)
+"
+```
+
+**Slack Setup**: Configure your webhook URL in `config/settings.toml` under `[slack]` section. See [Slack Incoming Webhooks documentation](https://api.slack.com/messaging/webhooks) for webhook URL setup.
 
 ### Project Structure
 

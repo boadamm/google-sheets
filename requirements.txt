@@ -16,6 +16,9 @@ gspread-dataframe==3.3.1
 pyyaml==6.0.1
 tomli==2.0.1
 
+# HTTP requests for Slack notifications
+requests==2.31.0
+
 # Excel file support
 openpyxl==3.1.5
 

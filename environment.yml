@@ -17,4 +17,5 @@ dependencies:
   - pip:
     - gspread==6.1.2
     - gspread-dataframe==3.3.1
-    - pyyaml==6.0.1 
+    - pyyaml==6.0.1
+    - requests==2.31.0 

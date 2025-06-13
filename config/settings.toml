@@ -8,6 +8,9 @@ worksheet_name = "Sheet1"  # Default worksheet name
 
 [slack]
 webhook_url = "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"  # Replace with actual Slack webhook URL
+channel = "#general"  # Target Slack channel for notifications
+username = "Sheets-Bot"  # Bot username (optional, defaults to "Sheets-Bot")
+icon_emoji = ":robot_face:"  # Bot icon emoji (optional, defaults to ":robot_face:")
 
 [watcher]
 folder = "./watch"  # Directory to monitor for file changes
