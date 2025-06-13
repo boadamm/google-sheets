@@ -1,0 +1,176 @@
+name: Release Build
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  build-release:
+    runs-on: ${{ matrix.os }}
+    if: github.repository == 'baranozck/sheets-bot'
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build GUI application (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        bash -l -c "make build-gui"
+    
+    - name: Build GUI application (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        make build-gui
+    
+    - name: Import code-sign cert
+      id: import-cert
+      if: runner.os == 'Windows' && secrets.WIN_CERT_BASE64 != ''
+      shell: pwsh
+      run: |
+        echo "${{ secrets.WIN_CERT_BASE64 }}" | Out-File win_cert.b64
+        certutil -decode win_cert.b64 win_cert.pfx
+        certutil -f -p "${{ secrets.WIN_CERT_PASS }}" -importPFX win_cert.pfx
+
+    - name: Sign exe
+      id: codesign
+      if: runner.os == 'Windows' && secrets.WIN_CERT_BASE64 != ''
+      shell: pwsh
+      run: |
+        $exe = Get-ChildItem dist/SheetsBot -Filter *.exe | Select-Object -First 1
+        & signtool sign /fd SHA256 /a /f win_cert.pfx /p "${{ secrets.WIN_CERT_PASS }}" $exe
+
+    - name: Create zip archive
+      shell: bash
+      run: |
+        cd dist
+        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+          if [[ "${{ secrets.WIN_CERT_BASE64 }}" != "" ]]; then
+            7z a -tzip ../SheetsBot-Windows-signed.zip SheetsBot/
+          else
+            7z a -tzip ../SheetsBot-Windows.zip SheetsBot/
+          fi
+        else
+          zip -r ../SheetsBot-Linux.zip SheetsBot/
+        fi
+        cd ..
+    
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SheetsBot-${{ runner.os }}
+        path: |
+          SheetsBot-${{ runner.os }}.zip
+          SheetsBot-${{ runner.os }}-signed.zip
+        retention-days: 30
+    
+    - name: Publish Release
+      if: matrix.os == 'ubuntu-latest'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v1.0.0
+        name: "SheetsBot v1.0.0"
+        body: |
+          ## SheetsBot Desktop Application v1.0.0
+          
+          🚀 **Desktop GUI application for automated Google Sheets synchronization**
+          
+          ### Downloads:
+          - **Windows**: `SheetsBot-Windows.zip` - Extract and run `SheetsBot.exe`
+          - **Linux**: `SheetsBot-Linux.zip` - Extract and run `./SheetsBot`
+          
+          ### Features:
+          - ✅ **Manual Sync**: Select CSV/XLSX files and sync to Google Sheets
+          - ✅ **Automated Watcher**: Monitor folders for new files and auto-sync
+          - ✅ **Live Status Updates**: Real-time diff tracking and Slack notifications
+          - ✅ **Cross-Platform**: Native desktop apps for Windows and Linux
+          
+          ### System Requirements:
+          - No Python installation required - fully self-contained
+          - Windows 10+ or Linux (Ubuntu 18.04+)
+          - Google Sheets API credentials (see documentation)
+          
+          ### Quick Start:
+          1. Download the appropriate zip file for your OS
+          2. Extract to a folder of your choice
+          3. Run the executable (SheetsBot.exe on Windows, ./SheetsBot on Linux)
+          4. Follow the GUI setup wizard
+          
+          For detailed setup instructions, see the [README](https://github.com/baranozck/sheets-bot/blob/main/README.md).
+        draft: true
+        prerelease: false
+        files: |
+          SheetsBot-Windows*.zip
+          SheetsBot-Linux.zip
+        token: ${{ secrets.GITHUB_TOKEN }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  post-release-readme:
+    needs: build-release
+    runs-on: ubuntu-latest
+    if: github.repository == 'baranozck/sheets-bot'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+    
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Update README with release badges
+      run: |
+        python scripts/update_readme.py
+      env:
+        GITHUB_REF_NAME: ${{ github.ref_name }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+    
+    - name: Create Pull Request for README updates
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "chore: update README badges for release ${{ github.ref_name }}"
+        title: "📋 Update README badges for release ${{ github.ref_name }}"
+        body: |
+          ## Automated README Update
+          
+          This PR updates the README.md with:
+          - ✅ Latest Release badge pointing to `${{ github.ref_name }}`
+          - ✅ Direct download links for Windows and Linux releases
+          - ✅ Professional presentation of release artifacts
+          
+          **Generated by**: Release workflow post-release-readme step
+          **Release**: ${{ github.ref_name }}
+          **Triggered by**: Release publication event
+          
+          ### Changes:
+          - Updated Latest Release badge with current version
+          - Added/updated Downloads section with direct artifact links
+          - Maintained idempotent operation (no duplicates)
+        branch: update-readme-${{ github.ref_name }}
+        branch-suffix: timestamp
+        delete-branch: true
+        base: main 

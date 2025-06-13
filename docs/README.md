@@ -124,6 +124,84 @@ Here's the complete "watch → parse → print" workflow:
 
 3. **Watch the magic happen!** The watcher will detect the file and process it automatically.
 
+## GUI Desktop App
+
+🖥️ **NEW!** Experience sheets-bot with a beautiful desktop interface - no command line required!
+
+### Download the latest build
+
+**Download the desktop app for your platform:**
+- 🪟 **Windows**: [Download SheetsBot.exe](releases/) *(coming soon)*
+- 🐧 **Linux**: [Download SheetsBot](releases/) *(coming soon)*
+- 🍎 **macOS**: [Download SheetsBot.app](releases/) *(coming soon)*
+
+### Quick Start Guide
+
+1. **Download and extract** the app for your platform
+2. **Double-click** the executable to launch Sheets Bot
+3. **First-time setup**: You'll see the main window with two tabs:
+   - **Manual Sync**: For one-time file processing
+   - **Watcher**: For automated file monitoring
+
+![GUI Demo](img/gui_demo.gif)
+
+### Features
+
+✨ **Manual Sync Tab**:
+- Click "Select File" to choose your CSV/XLSX file
+- Watch real-time processing with diff counts ("+3 / 0 / 0" format)
+- Get clickable Google Sheets URLs when upload completes
+- View all operations in the integrated log panel
+
+🔄 **Watcher Tab**:
+- Set your watch folder (defaults to `./watch`)
+- Click "Start Watch" to monitor for new files
+- See live Slack notifications with ✅/❌ status indicators
+- Stop and restart monitoring anytime
+
+🪟 **Professional Interface**:
+- Tabbed layout for different workflows
+- Dockable log panel for real-time debugging
+- Dark-themed console output
+- Menu bar with keyboard shortcuts (Ctrl+Q to exit)
+
+### First Run Walkthrough
+
+1. **Launch the app** - The main window opens with "Manual Sync" tab active
+2. **Try manual sync**:
+   - Click "Select File" and choose `samples/data.csv`
+   - Watch the status update with processing progress
+   - See the Google Sheets URL appear when complete
+3. **Test the watcher**:
+   - Switch to "Watcher" tab
+   - Keep the default `./watch` folder or browse to change it
+   - Click "Start Watch"
+   - Copy a file to the watch folder and see automatic processing
+
+### System Requirements
+
+- **Windows**: Windows 10 or later (64-bit)
+- **Linux**: Any modern distribution with GUI support
+- **macOS**: macOS 10.14 or later
+- **Memory**: 256MB RAM minimum
+- **Disk**: 100MB free space
+
+### Troubleshooting Desktop App
+
+**App won't start**:
+- Ensure you have the required system libraries installed
+- On Linux: `sudo apt-get install libxcb-xinerama0`
+- Check the log files in the app directory
+
+**No Google Sheets integration**:
+- The desktop app uses the same `config/creds.json` file as the CLI
+- Follow the [Google Sheets Setup](#google-sheets-setup-free-tier) instructions below
+- Place your credentials file in the same folder as the app executable
+
+**File permissions**:
+- Ensure the app has read/write access to your chosen folders
+- On Linux/macOS: Make sure the executable bit is set (`chmod +x SheetsBot`)
+
 ## Troubleshooting on WSL
 
 ### Common Issues and Solutions

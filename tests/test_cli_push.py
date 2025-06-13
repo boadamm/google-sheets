@@ -310,7 +310,8 @@ with patch('cli.SheetsClient') as mock_client_class:
 
         # Should contain expected output
         assert (
-            "Watching folder:" in result.stdout or "No files found to process" in result.stdout
+            "Watching folder:" in result.stdout
+            or "No files found to process" in result.stdout
         ), f"Expected watch mode output in stdout: {result.stdout}"
 
     def test_cli_handles_unsupported_file_type_error(self):
