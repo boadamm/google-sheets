@@ -197,4 +197,68 @@ watcher.stop()  # Clean shutdown
 ### Next Sprint (T4):
 - Integration of watcher with Google Sheets processing
 - Slack notification system
-- End-to-end workflow implementation 
+- End-to-end workflow implementation
+
+## Sprint 2 – T4 CLI one-shot added
+
+**Date**: $(date +'%Y-%m-%d')  
+**Status**: ✅ COMPLETED
+
+### Completed Tasks:
+- [x] Created comprehensive failing tests in `tests/test_cli.py` following TDD principles
+- [x] Implemented `app/parser.py` with file parsing functionality:
+  - Supports CSV and XLSX file formats
+  - Comprehensive error handling for missing files, unsupported types, and parse errors
+  - DataFrame cleaning with empty row/column removal and whitespace trimming
+- [x] Implemented `cli.py` using Click framework:
+  - `--file PATH` (required) option for specifying input file
+  - `--once / --watch` flag (default `--once`, `--watch` reserved for future)
+  - Pretty-printed DataFrame output with pandas display options
+  - Proper exit codes (0 for success, 1 for errors)
+  - Comprehensive error handling with helpful messages
+- [x] Added sample files:
+  - `samples/data.csv` - 3 rows, 3 columns demo data
+  - `samples/data.xlsx` - Same data in Excel format
+- [x] Updated `README.md` with CLI quick-start section and sample output
+- [x] Added openpyxl dependency for Excel support
+
+### CLI Implementation Features:
+- **File Support**: CSV (.csv) and Excel (.xlsx, .xls) formats
+- **Data Cleaning**: Removes empty rows/columns, trims whitespace, handles NaN values
+- **Error Handling**: File not found, unsupported types, parse errors, and unexpected errors
+- **Output Formatting**: Pretty-printed DataFrame with optimized display settings
+- **Command Interface**: Click-based CLI with help text and option validation
+
+### Quality Status:
+- ✅ All 8 CLI tests pass (100% success rate)
+- ✅ Test coverage: Comprehensive for both cli.py and parser.py modules
+- ✅ Ruff linting: Zero issues
+- ✅ Black formatting: Compliant
+- ✅ TDD methodology: Tests written first, then implementation
+
+### Technical Implementation:
+```bash
+# Usage examples:
+python cli.py --file samples/data.csv --once
+python cli.py --file samples/data.xlsx --once
+
+# Sample output:
+       Name  Age        City
+   John Doe   30    New York
+ Jane Smith   25 Los Angeles
+Bob Johnson   35     Chicago
+```
+
+### Files Created/Modified:
+- `cli.py` - Main CLI entry point (64 lines)
+- `app/parser.py` - File parsing and cleaning logic (73 lines)
+- `tests/test_cli.py` - Comprehensive CLI test suite (108 lines)
+- `samples/data.csv` - Sample CSV data (4 lines)
+- `samples/data.xlsx` - Sample Excel data
+- `README.md` - Enhanced with CLI quick-start section
+- `docs/status.md` - This status update
+
+### Next Sprint (T5):
+- Integration of CLI with file watcher for automatic processing
+- Google Sheets upload functionality
+- Slack notification system

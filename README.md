@@ -43,6 +43,23 @@ pip install pre-commit && pre-commit install
 
 ### Usage Examples
 
+#### CLI File Parser
+```bash
+# Parse a CSV file and display cleaned DataFrame
+python cli.py --file samples/data.csv --once
+
+# Parse an Excel file and display cleaned DataFrame  
+python cli.py --file samples/data.xlsx --once
+```
+
+**Sample Output:**
+```
+       Name  Age        City
+   John Doe   30    New York
+ Jane Smith   25 Los Angeles
+Bob Johnson   35     Chicago
+```
+
 #### File Watcher Demo
 ```bash
 # Run the interactive file watcher demo

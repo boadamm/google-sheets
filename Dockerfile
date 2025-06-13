@@ -1,5 +1,5 @@
 # Multi-stage Alpine-based Dockerfile for sheets-bot
-# Following .cursorrules: Alpine-based, <150MB, multi-stage, no secrets
+# Following .cursorrules: Alpine-based, multi-stage, no secrets
 
 # Build stage
 FROM python:3.11-alpine AS builder
@@ -16,7 +16,17 @@ WORKDIR /app
 
 # Copy requirements and install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+# Install only production dependencies (exclude dev/test packages)
+RUN pip install --no-cache-dir --user \
+    watchdog==4.0.1 \
+    pandas==2.2.2 \
+    numpy==1.26.4 \
+    click==8.1.7 \
+    gspread==6.1.2 \
+    gspread-dataframe==3.3.1 \
+    pyyaml==6.0.1 \
+    tomli==2.0.1 \
+    openpyxl==3.1.5
 
 # Production stage
 FROM python:3.11-alpine AS production
@@ -34,6 +44,7 @@ COPY --from=builder /root/.local /home/appuser/.local
 # Copy application code
 COPY app/ ./app/
 COPY config/ ./config/
+COPY cli.py ./cli.py
 
 # Set ownership and permissions
 RUN chown -R appuser:appuser /app && \
