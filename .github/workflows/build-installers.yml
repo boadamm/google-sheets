@@ -1,0 +1,229 @@
+name: Build Installers
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build desktop app
+      run: |
+        pyinstaller -y build/pyinstaller.spec
+    
+    - name: Install NSIS
+      run: |
+        choco install nsis -y
+        echo "C:\Program Files (x86)\NSIS" >> $GITHUB_PATH
+    
+    - name: Create license file
+      run: echo "MIT License - Copyright (c) 2024 SheetsBot" > LICENSE.txt
+    
+    - name: Build Windows installer
+      run: makensis build/installer.nsi
+    
+    - name: Upload Windows installer
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-installer
+        path: SheetsBot-Setup.exe
+    
+    - name: Upload to Release
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: SheetsBot-Setup.exe
+        asset_name: SheetsBot-Setup-${{ github.event.release.tag_name }}.exe
+        asset_content_type: application/octet-stream
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget fuse libfuse2
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build desktop app
+      run: |
+        pyinstaller -y build/pyinstaller.spec
+    
+    - name: Build AppImage
+      run: |
+        chmod +x build/build_appimage.sh
+        bash build/build_appimage.sh
+    
+    - name: Build Debian package
+      run: |
+        # Create debian package structure
+        DEB_DIR="sheetsbot-1.0.0"
+        mkdir -p "$DEB_DIR/DEBIAN"
+        mkdir -p "$DEB_DIR/usr/bin"
+        mkdir -p "$DEB_DIR/usr/share/applications"
+        mkdir -p "$DEB_DIR/usr/share/icons/hicolor/64x64/apps"
+        
+        # Copy application files
+        cp -r dist/SheetsBot "$DEB_DIR/usr/share/sheetsbot"
+        
+        # Create wrapper script
+        cat > "$DEB_DIR/usr/bin/sheetsbot" << 'EOF'
+        #!/bin/bash
+        cd /usr/share/sheetsbot
+        exec ./SheetsBot "$@"
+        EOF
+        chmod +x "$DEB_DIR/usr/bin/sheetsbot"
+        
+        # Create desktop file
+        cat > "$DEB_DIR/usr/share/applications/sheetsbot.desktop" << 'EOF'
+        [Desktop Entry]
+        Type=Application
+        Name=SheetsBot
+        Comment=Desktop application for Google Sheets automation
+        Exec=sheetsbot
+        Icon=sheetsbot
+        StartupNotify=true
+        Categories=Office;Productivity;
+        EOF
+        
+        # Create control file
+        cat > "$DEB_DIR/DEBIAN/control" << 'EOF'
+        Package: sheetsbot
+        Version: 1.0.0
+        Section: office
+        Priority: optional
+        Architecture: amd64
+        Maintainer: SheetsBot <support@sheetsbot.com>
+        Description: Desktop application for Google Sheets automation
+         SheetsBot is a powerful desktop application that allows you to
+         automate Google Sheets operations with an intuitive GUI interface.
+        EOF
+        
+        # Build the package
+        dpkg-deb --build "$DEB_DIR" sheetsbot-1.0.0_amd64.deb
+    
+    - name: Create portable archives
+      run: |
+        cd dist
+        tar -czf ../SheetsBot-Linux-Portable.tar.gz SheetsBot/
+        cd ..
+    
+    - name: Upload Linux artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: linux-packages
+        path: |
+          SheetsBot-x86_64.AppImage
+          sheetsbot-1.0.0_amd64.deb
+          SheetsBot-Linux-Portable.tar.gz
+    
+    - name: Upload AppImage to Release
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: SheetsBot-x86_64.AppImage
+        asset_name: SheetsBot-${{ github.event.release.tag_name }}-x86_64.AppImage
+        asset_content_type: application/octet-stream
+    
+    - name: Upload Debian Package to Release
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: sheetsbot-1.0.0_amd64.deb
+        asset_name: sheetsbot-${{ github.event.release.tag_name }}_amd64.deb
+        asset_content_type: application/octet-stream
+    
+    - name: Upload Linux Portable to Release
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: SheetsBot-Linux-Portable.tar.gz
+        asset_name: SheetsBot-${{ github.event.release.tag_name }}-Linux-Portable.tar.gz
+        asset_content_type: application/gzip
+
+  build-portable:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build desktop app
+      run: |
+        pyinstaller -y build/pyinstaller.spec
+    
+    - name: Create Windows portable
+      run: |
+        cd dist
+        zip -r ../SheetsBot-Windows-Portable.zip SheetsBot/
+        cd ..
+    
+    - name: Upload portable archive
+      uses: actions/upload-artifact@v3
+      with:
+        name: portable-archive
+        path: SheetsBot-Windows-Portable.zip
+    
+    - name: Upload Windows Portable to Release
+      if: github.event_name == 'release'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: SheetsBot-Windows-Portable.zip
+        asset_name: SheetsBot-${{ github.event.release.tag_name }}-Windows-Portable.zip
+        asset_content_type: application/zip 

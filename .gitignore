@@ -10,7 +10,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
 dist/
 downloads/
@@ -179,4 +178,62 @@ Thumbs.db
 *.db
 logs/
 tmp/
-temp/ 
+temp/
+
+# Build and Installer Artifacts (not needed by end users)
+build_output/
+*.exe
+*.msi
+*.AppImage
+*.deb
+*.rpm
+*.dmg
+*.pkg
+appimagetool-x86_64.AppImage
+SheetsBot-Setup.exe
+SheetsBot-*.exe
+SheetsBot-*-x86_64.AppImage
+sheetsbot-*_amd64.deb
+SheetsBot-*-Windows-Portable.zip
+SheetsBot-*-Linux-Portable.tar.gz
+SheetsBot.AppDir/
+
+# PyInstaller build artifacts
+*.spec.backup
+build/pyinstaller/
+# But we want to include PyInstaller's build/ output
+build/__pycache__/
+
+# License file (auto-generated during build)
+LICENSE.txt
+
+# Temporary installer files
+*.tmp
+*.temp
+
+# NSIS installer cache
+*.nsi.backup
+
+# AppImage build cache
+*.desktop.backup
+
+# Conda build artifacts
+*.conda-bld/
+
+# Development and testing files not needed by end users
+.pytest_cache/
+.coverage*
+htmlcov/
+.tox/
+
+# Local configuration files with sensitive data
+config/credentials.json
+config/client_secret.json
+config/token.json
+*.credentials
+*.secrets
+
+# Editor and IDE specific files
+*.sublime-*
+.vscode/settings.json
+.vscode/launch.json 
