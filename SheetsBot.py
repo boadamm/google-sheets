@@ -18,30 +18,31 @@ from pathlib import Path
 def check_and_install_requirements():
     """Check if required packages are installed, install if missing."""
     
-    # Required packages for basic functionality
-    required_packages = [
-        'click',
-        'pandas', 
-        'watchdog',
-        'gspread',
-        'gspread-dataframe',
-        'pyyaml',
-        'tomli',
-        'openpyxl',
-        'PySide6'
-    ]
+    # Map of package names (for pip install) to their import names
+    package_mapping = {
+        'click': 'click',
+        'pandas': 'pandas', 
+        'watchdog': 'watchdog',
+        'gspread': 'gspread',
+        'gspread-dataframe': 'gspread_dataframe',
+        'pyyaml': 'yaml',  # pyyaml installs as 'yaml'
+        'tomli': 'tomli',
+        'tomli-w': 'tomli_w',  # tomli-w installs as 'tomli_w'
+        'openpyxl': 'openpyxl',
+        'PySide6': 'PySide6'
+    }
     
     missing_packages = []
     
     print("🔍 Checking dependencies...")
     
-    for package in required_packages:
+    for package_name, import_name in package_mapping.items():
         try:
-            importlib.import_module(package.lower().replace('-', '_'))
-            print(f"✅ {package}")
+            importlib.import_module(import_name)
+            print(f"✅ {package_name}")
         except ImportError:
-            missing_packages.append(package)
-            print(f"❌ {package} - missing")
+            missing_packages.append(package_name)
+            print(f"❌ {package_name} - missing")
     
     if missing_packages:
         print(f"\n📦 Installing missing packages: {', '.join(missing_packages)}")
