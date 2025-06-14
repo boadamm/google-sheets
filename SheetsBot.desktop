@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Sheets Bot
+Comment=Desktop application for Google Sheets automation
+Exec=/home/baranozck/demoproject/launch_sheets_bot.sh
+Icon=/home/baranozck/demoproject/dist/SheetsBot/_internal/icon.png
+Path=/home/baranozck/demoproject
+Terminal=true
+StartupNotify=true
+Categories=Office;Productivity;Development;
+Keywords=sheets;google;automation;csv;excel;
+MimeType=text/csv;application/vnd.ms-excel;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; 

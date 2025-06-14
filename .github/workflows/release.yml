@@ -11,7 +11,7 @@ env:
 jobs:
   build-release:
     runs-on: ${{ matrix.os }}
-    if: github.repository == 'baranozck/sheets-bot'
+    if: github.repository == 'boadamm/demoproject'
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
@@ -114,7 +114,7 @@ jobs:
           3. Run the executable (SheetsBot.exe on Windows, ./SheetsBot on Linux)
           4. Follow the GUI setup wizard
           
-          For detailed setup instructions, see the [README](https://github.com/baranozck/sheets-bot/blob/main/README.md).
+          For detailed setup instructions, see the [README](https://github.com/boadamm/demoproject/blob/main/README.md).
         draft: true
         prerelease: false
         files: |
@@ -127,7 +127,7 @@ jobs:
   post-release-readme:
     needs: build-release
     runs-on: ubuntu-latest
-    if: github.repository == 'baranozck/sheets-bot'
+    if: github.repository == 'boadamm/demoproject'
     
     steps:
     - name: Checkout code

@@ -1,10 +1,10 @@
 # sheets-bot
 
-[![CI Pipeline](https://github.com/baranozck/demoproject/actions/workflows/ci.yml/badge.svg)](https://github.com/baranozck/demoproject/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)](https://github.com/baranozck/demoproject/actions)
+[![CI Pipeline](https://github.com/boadamm/demoproject/actions/workflows/ci.yml/badge.svg)](https://github.com/boadamm/demoproject/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)](https://github.com/boadamm/demoproject/actions)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Linting: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Latest Release](https://img.shields.io/github/v/release/baranozck/sheets-bot)](https://github.com/baranozck/sheets-bot/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/boadamm/demoproject)](https://github.com/boadamm/demoproject/releases/latest)
 
 A production-quality Python application for Google Sheets automation using Miniconda on Ubuntu WSL.
 
@@ -13,12 +13,12 @@ A production-quality Python application for Google Sheets automation using Minic
 
 ## Downloads
 
-Get the latest desktop application:
-
-- **Windows (signed)**: [v1.0.0 SheetsBot-Windows-signed.zip](https://github.com/baranozck/sheets-bot/releases/download/v1.0.0/SheetsBot-Windows-signed.zip)
-- **Linux**: [v1.0.0 SheetsBot-Linux.zip](https://github.com/baranozck/sheets-bot/releases/download/v1.0.0/SheetsBot-Linux.zip)
-
-> 💡 **No Python installation required** - these are fully self-contained desktop applications.
+> 🚧 **Desktop applications coming soon!** 
+> 
+> We're preparing self-contained desktop applications for Windows and Linux. 
+> In the meantime, you can use the CLI version below or build from source.
+> 
+> 💡 **Want to build now?** Run `make build-gui` to create your own desktop app.
 
 
 ## Quick Start (Conda on WSL)
