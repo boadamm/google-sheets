@@ -10,7 +10,15 @@ import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 import tomli
-import tomli_w
+
+# Try to import tomli_w, fall back gracefully if not available
+try:
+    import tomli_w
+    TOMLI_W_AVAILABLE = True
+except ImportError:
+    TOMLI_W_AVAILABLE = False
+    print("⚠️  tomli_w not available - configuration saving may be limited")
+
 from PySide6.QtCore import Qt, Signal, QThread, pyqtSignal
 from PySide6.QtWidgets import (
     QWidget,
@@ -70,8 +78,17 @@ class CredentialsTestWorker(QThread):
                     "worksheet_name": self.worksheet_name
                 }
             }
-            with open(temp_settings_path, 'wb') as f:
-                tomli_w.dump(temp_settings, f)
+            if TOMLI_W_AVAILABLE:
+                with open(temp_settings_path, 'wb') as f:
+                    tomli_w.dump(temp_settings, f)
+            else:
+                # Simple fallback for testing
+                toml_content = f"""[sheets]
+                spreadsheet_id = "{self.spreadsheet_id}"
+                worksheet_name = "{self.worksheet_name}"
+                """
+                with open(temp_settings_path, 'w') as f:
+                    f.write(toml_content)
             
             # Test the connection
             client = SheetsClient(
@@ -599,8 +616,14 @@ class ConfigTab(QWidget):
             
             # Save settings
             settings_path = Path("config/settings.toml")
-            with open(settings_path, 'wb') as f:
-                tomli_w.dump(settings_data, f)
+            if TOMLI_W_AVAILABLE:
+                with open(settings_path, 'wb') as f:
+                    tomli_w.dump(settings_data, f)
+            else:
+                # Fallback: create a basic TOML manually if tomli_w is not available
+                toml_content = self._create_basic_toml(settings_data)
+                with open(settings_path, 'w') as f:
+                    f.write(toml_content)
             
             # Update status
             self.status_label.setText("✅ Configuration saved successfully! You can now use the other tabs to sync your data.")
@@ -742,3 +765,28 @@ class ConfigTab(QWidget):
             return False
         
         return True
+    
+    def _create_basic_toml(self, settings_data: Dict[str, Any]) -> str:
+        """Create basic TOML content manually if tomli_w is not available.
+        
+        Args:
+            settings_data: Dictionary containing settings to convert to TOML
+            
+        Returns:
+            str: TOML formatted string
+        """
+        toml_lines = []
+        
+        for section_name, section_data in settings_data.items():
+            toml_lines.append(f"[{section_name}]")
+            for key, value in section_data.items():
+                if isinstance(value, str):
+                    toml_lines.append(f'{key} = "{value}"')
+                elif isinstance(value, list):
+                    value_str = ", ".join(f'"{item}"' for item in value)
+                    toml_lines.append(f'{key} = [{value_str}]')
+                else:
+                    toml_lines.append(f'{key} = {value}')
+            toml_lines.append("")  # Empty line between sections
+        
+        return "\n".join(toml_lines)

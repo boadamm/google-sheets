@@ -100,12 +100,17 @@ def launch_gui():
         run_gui()
         
     except ImportError as e:
-        print(f"❌ Failed to import GUI: {e}")
-        print("Falling back to CLI mode...")
+        print(f"❌ Failed to import GUI modules: {e}")
+        print(f"💡 Detailed error: {str(e)}")
+        print("🔄 Falling back to CLI mode...")
+        input("Press Enter to continue to CLI...")
         launch_cli()
     except Exception as e:
         print(f"❌ Failed to launch GUI: {e}")
-        print("Falling back to CLI mode...")
+        print(f"💡 Error type: {type(e).__name__}")
+        print(f"💡 Detailed error: {str(e)}")
+        print("🔄 Falling back to CLI mode...")
+        input("Press Enter to continue to CLI...")
         launch_cli()
 
 def launch_cli():
