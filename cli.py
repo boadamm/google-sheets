@@ -11,11 +11,11 @@ import sys
 from pathlib import Path
 import click
 import pandas as pd
-from app.parser import parse_file, UnsupportedFileTypeError
-from app.sheets_client import SheetsClient, SheetsPushError
-from app.watcher import Watcher
-from app.delta import DeltaTracker
-from app.notifier import SlackNotifier
+from app.core.parser import parse_file, UnsupportedFileTypeError
+from app.integrations.sheets_client import SheetsClient, SheetsPushError
+from app.core.watcher import Watcher
+from app.core.delta import DeltaTracker
+from app.integrations.notifier import SlackNotifier
 
 
 @click.command()

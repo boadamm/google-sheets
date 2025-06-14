@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 import pandas as pd
 import json
 
-from app.sheets_client import SheetsClient, SheetsPushError
+from app.integrations.sheets_client import SheetsClient, SheetsPushError
 
 
 class TestSheetsClient:
@@ -18,7 +18,7 @@ class TestSheetsClient:
 
     def test_sheets_client_init_with_default_paths(self):
         """Test SheetsClient initialization with default config paths."""
-        with patch("app.sheets_client.Path.exists", return_value=True), patch(
+        with patch("app.integrations.sheets_client.Path.exists", return_value=True), patch(
             "builtins.open", mock_open_for_configs()
         ):
             client = SheetsClient()
@@ -30,7 +30,7 @@ class TestSheetsClient:
         custom_creds = Path("custom/creds.json")
         custom_settings = Path("custom/settings.toml")
 
-        with patch("app.sheets_client.Path.exists", return_value=True), patch(
+        with patch("app.integrations.sheets_client.Path.exists", return_value=True), patch(
             "builtins.open", mock_open_for_configs()
         ):
             client = SheetsClient(
@@ -41,7 +41,7 @@ class TestSheetsClient:
 
     def test_sheets_client_missing_creds_file(self):
         """Test SheetsClient raises error when creds file is missing."""
-        with patch("app.sheets_client.Path.exists", return_value=False):
+        with patch("app.integrations.sheets_client.Path.exists", return_value=False):
             with pytest.raises(FileNotFoundError, match="Credentials file not found"):
                 SheetsClient()
 
@@ -51,12 +51,12 @@ class TestSheetsClient:
         def mock_exists(path_obj):
             return "creds.json" in str(path_obj)
 
-        with patch("app.sheets_client.Path.exists", mock_exists):
+        with patch("app.integrations.sheets_client.Path.exists", mock_exists):
             with pytest.raises(FileNotFoundError, match="Settings file not found"):
                 SheetsClient()
 
-    @patch("app.sheets_client.gspread.service_account")
-    @patch("app.sheets_client.gspread_dataframe.set_with_dataframe")
+    @patch("app.integrations.sheets_client.gspread.service_account")
+    @patch("app.integrations.sheets_client.gspread_dataframe.set_with_dataframe")
     def test_push_dataframe_success(
         self, mock_set_with_dataframe, mock_service_account
     ):
@@ -71,7 +71,7 @@ class TestSheetsClient:
         mock_gc.open_by_key.return_value = mock_spreadsheet
         mock_spreadsheet.worksheet.return_value = mock_worksheet
 
-        with patch("app.sheets_client.Path.exists", return_value=True), patch(
+        with patch("app.integrations.sheets_client.Path.exists", return_value=True), patch(
             "builtins.open", mock_open_for_configs()
         ):
             client = SheetsClient()
@@ -91,7 +91,7 @@ class TestSheetsClient:
         mock_set_with_dataframe.assert_called_once_with(mock_worksheet, df)
         assert result_url == "https://docs.google.com/spreadsheets/d/abc123/edit#gid=0"
 
-    @patch("app.sheets_client.gspread.service_account")
+    @patch("app.integrations.sheets_client.gspread.service_account")
     def test_push_dataframe_api_error(self, mock_service_account):
         """Test SheetsPushError is raised when gspread raises APIError."""
         from gspread.exceptions import APIError
@@ -107,7 +107,7 @@ class TestSheetsClient:
         }
         mock_gc.open_by_key.side_effect = APIError(mock_response)
 
-        with patch("app.sheets_client.Path.exists", return_value=True), patch(
+        with patch("app.integrations.sheets_client.Path.exists", return_value=True), patch(
             "builtins.open", mock_open_for_configs()
         ):
             client = SheetsClient()
@@ -120,8 +120,8 @@ class TestSheetsClient:
         ):
             client.push_dataframe(df)
 
-    @patch("app.sheets_client.gspread.service_account")
-    @patch("app.sheets_client.gspread_dataframe.set_with_dataframe")
+    @patch("app.integrations.sheets_client.gspread.service_account")
+    @patch("app.integrations.sheets_client.gspread_dataframe.set_with_dataframe")
     def test_push_dataframe_worksheet_clear_called_before_set(
         self, mock_set_with_dataframe, mock_service_account
     ):
@@ -143,7 +143,7 @@ class TestSheetsClient:
             "set_with_dataframe"
         )
 
-        with patch("app.sheets_client.Path.exists", return_value=True), patch(
+        with patch("app.integrations.sheets_client.Path.exists", return_value=True), patch(
             "builtins.open", mock_open_for_configs()
         ):
             client = SheetsClient()

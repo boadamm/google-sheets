@@ -8,7 +8,7 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 import pytest
 
-from app.notifier import SlackNotifier
+from app.integrations.notifier import SlackNotifier
 
 
 class TestSlackNotifier:

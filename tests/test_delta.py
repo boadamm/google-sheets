@@ -8,7 +8,7 @@ import tempfile
 from pathlib import Path
 import pandas as pd
 
-from app.delta import DeltaTracker
+from app.core.delta import DeltaTracker
 
 
 class TestDeltaTracker:

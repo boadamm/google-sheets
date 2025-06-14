@@ -1,0 +1,54 @@
+# Include important documentation
+include README.md
+include INSTALLATION.md
+include API_SETUP_GUIDE.md
+include LICENSE
+include requirements.txt
+include environment.yml
+
+# Include configuration files
+recursive-include config *.toml
+recursive-include config *.yml
+recursive-include config *.yaml
+
+# Include GUI assets
+recursive-include app/gui *.ui
+recursive-include app/gui *.qrc
+recursive-include app/gui/assets *
+
+# Include desktop files
+include *.desktop
+
+# Include installation scripts
+include install.sh
+include install.bat
+
+# Include sample data
+recursive-include samples *
+
+# Exclude development and build files
+exclude .cursorrules
+exclude .gitignore
+exclude Dockerfile
+exclude .dockerignore
+exclude Makefile
+exclude pytest.ini
+exclude .coveragerc
+
+# Exclude cache and temporary files
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude .coverage
+global-exclude .pytest_cache
+
+# Exclude build directories
+prune build
+prune dist
+prune .git
+prune .github
+prune .ruff_cache
+prune watch 

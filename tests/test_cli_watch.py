@@ -100,7 +100,7 @@ from pathlib import Path
 
 # Patch SheetsClient to use mock credentials
 from unittest.mock import patch, MagicMock
-import app.sheets_client
+import app.integrations.sheets_client
 import app.notifier
 
 def mock_sheets_push(self, df):
@@ -110,8 +110,8 @@ def mock_slack_post(self, diff, url):
     return True
 
 # Apply patches
-app.sheets_client.SheetsClient.__init__ = lambda self, creds_path=None, settings_path=None: None
-app.sheets_client.SheetsClient.push_dataframe = mock_sheets_push
+app.integrations.sheets_client.SheetsClient.__init__ = lambda self, creds_path=None, settings_path=None: None
+app.integrations.sheets_client.SheetsClient.push_dataframe = mock_sheets_push
 
 app.notifier.SlackNotifier.post_summary = mock_slack_post
 app.notifier.SlackNotifier.from_settings = lambda settings_path=None: app.notifier.SlackNotifier("", "")

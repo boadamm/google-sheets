@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 import pytest
 
-from app.watcher import Watcher
+from app.core.watcher import Watcher
 
 
 class TestWatcher:
@@ -40,7 +40,7 @@ class TestWatcher:
 
         assert watcher.poll_interval == poll_interval
 
-    @patch("app.watcher.tomli.load")
+    @patch("app.core.watcher.tomli.load")
     def test_watcher_reads_config_defaults(self, mock_tomli_load):
         """Test that Watcher reads default values from settings.toml."""
         # Mock the tomli.load to return expected config

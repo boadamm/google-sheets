@@ -180,7 +180,7 @@ with patch('cli.SheetsClient') as mock_client_class:
 import sys
 sys.path.insert(0, '.')
 from unittest.mock import patch, MagicMock
-from app.sheets_client import SheetsPushError
+from app.integrations.sheets_client import SheetsPushError
 import cli
 
 # Mock SheetsClient to raise error
@@ -350,7 +350,7 @@ with patch('cli.SheetsClient') as mock_client_class:
 import sys
 sys.path.insert(0, '.')
 from unittest.mock import patch
-from app.parser import UnsupportedFileTypeError
+from app.core.parser import UnsupportedFileTypeError
 import cli
 
 # Mock parse_file to raise ValueError

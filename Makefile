@@ -1,15 +1,24 @@
 # Makefile for sheets-bot desktop application packaging
 # Provides tasks for building and cleaning GUI distribution
 
-.PHONY: build-gui clean-gui test-gui install-deps help
+.PHONY: build-gui clean-gui test-gui install-deps help release-patch release-minor release-major check-release
 
 # Default target shows help
 help:
 	@echo "Available targets:"
+	@echo ""
+	@echo "🏗️  Build Targets:"
 	@echo "  build-gui      Build desktop GUI application using PyInstaller"
 	@echo "  clean-gui      Clean build artifacts and distribution files"
 	@echo "  test-gui       Run GUI-specific tests"
 	@echo "  install-deps   Install PyInstaller and other build dependencies"
+	@echo ""
+	@echo "🚀 Release Targets:"
+	@echo "  release-patch  Create patch release (bug fixes)"
+	@echo "  release-minor  Create minor release (new features)"
+	@echo "  release-major  Create major release (breaking changes)"
+	@echo "  check-release  Preview what would be released (dry run)"
+	@echo ""
 	@echo "  help          Show this help message"
 
 # Install build dependencies
@@ -61,4 +70,29 @@ test-run:
 		echo "✅ Application starts successfully"; \
 	else \
 		echo "⚠️  Skipping application test (CI environment or build not found)"; \
-	fi 
+	fi
+
+# Release management targets
+check-release:
+	@echo "🔍 Checking release readiness..."
+	@python scripts/release.py patch --dry-run
+
+release-patch:
+	@echo "🚀 Creating patch release..."
+	@python scripts/release.py patch
+
+release-minor:
+	@echo "🚀 Creating minor release..."
+	@python scripts/release.py minor
+
+release-major:
+	@echo "🚀 Creating major release..."
+	@python scripts/release.py major
+
+# Full quality check before release
+pre-release-check:
+	@echo "🔍 Running pre-release quality checks..."
+	@ruff check .
+	@black --check .
+	@pytest -q
+	@echo "✅ All quality checks passed" 
