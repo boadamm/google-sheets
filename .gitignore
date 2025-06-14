@@ -8,6 +8,7 @@ __pycache__/
 *$py.class
 *.pyc
 *.pyo
+*.pyd
 
 # Distribution / packaging
 .Python
@@ -60,7 +61,6 @@ venv.bak/
 *.swp
 *.swo
 *~
-.cursorrules
 .cursor/
 
 # OS files
@@ -79,27 +79,39 @@ Thumbs.db
 dmypy.json
 
 # =============================================================================
-# SheetsBot Specific
+# SheetsBot Specific - SECURITY CRITICAL
 # =============================================================================
 
-# Sensitive configuration files
+# Google Sheets API credentials (NEVER COMMIT THESE!)
 config/credentials.json
 config/client_secret.json
 config/token.json
 config/creds.json
+config/service-account-key.json
 *.credentials
 *.secrets
+*.key
+*.pem
+*.p12
+
+# Environment files with secrets
+.env
+.env.local
+.env.production
+.env.staging
 
 # Application data and logs
 *.sqlite
+*.sqlite3
 *.db
 delta.db
 logs/
+*.log
 tmp/
 temp/
 
 # Watch directory (for file monitoring)
-watch/
+watch/*
 !watch/.gitkeep
 
 # Build artifacts
@@ -118,7 +130,18 @@ SheetsBot.AppDir/
 *.tmp
 *.temp
 
-# Development and testing files
-.coverage*
-pytest.ini
-.coveragerc 
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Slack webhook URLs and tokens (if stored in files)
+slack_webhook.txt
+slack_token.txt
+
+# Any backup files
+*.bak
+*.backup
+*~
+
+# Configuration files that might contain sensitive data
+config/local_settings.toml
+config/production_settings.toml 

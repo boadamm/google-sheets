@@ -1,180 +1,131 @@
-# sheets-bot
+# 🤖 SheetsBot - Google Sheets Automation Tool
 
-[![CI Pipeline](https://github.com/boadamm/demoproject/actions/workflows/ci.yml/badge.svg)](https://github.com/boadamm/demoproject/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)](https://github.com/boadamm/demoproject/actions)
-[![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Linting: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Latest Release](https://img.shields.io/github/v/release/boadamm/demoproject)](https://github.com/boadamm/demoproject/releases/latest)
+**Simple, powerful automation for Google Sheets with file monitoring and Slack notifications.**
 
-A production-quality Python application for Google Sheets automation using Miniconda on Ubuntu WSL.
+## ⚡ Quick Start
 
-📖 **[→ Complete Documentation & Quick Start Guide](docs/README.md)** ←
+### 🖱️ **One-Click Launch** (Recommended)
+1. **Download** the latest release
+2. **Double-click** `SheetsBot.py` 
+3. **Done!** The app will automatically install dependencies and launch
 
-
-## Downloads
-
-Get the latest desktop applications for your platform:
-
-### Latest Release
-
-- **Windows**: [Download SheetsBot-Windows-signed.zip](https://github.com/boadamm/demoproject/releases/latest/download/SheetsBot-Windows-signed.zip)
-- **Linux**: [Download SheetsBot-Linux.zip](https://github.com/boadamm/demoproject/releases/latest/download/SheetsBot-Linux.zip)
-
-> 💡 **Want to build now?** Run `make build-gui` to create your own desktop app.
-
-
-## Quick Start (Conda on WSL)
-
-### Prerequisites
-WSL users may need to install build dependencies:
+### 📋 Manual Installation
 ```bash
-sudo apt-get update
-sudo apt-get install build-essential libffi-dev
+# 1. Install Python 3.11 or higher
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Run the application
+python SheetsBot.py
 ```
 
-### Setup Development Environment
+## 🛠️ Setup (First Time Only)
 
+### 1. **Google Sheets API Setup**
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing
+3. Enable Google Sheets API
+4. Create service account credentials
+5. Download the JSON key file
+6. Copy it as `config/creds.json`
+
+### 2. **Configuration**
+- Copy `config/creds.example.json` to `config/creds.json`
+- Add your Google Sheets credentials
+- Edit `config/settings.toml` for your preferences
+
+## 🚀 Features
+
+### 📊 **File Processing**
+- **Auto-detect** CSV and Excel files
+- **Clean and standardize** data automatically
+- **Push to Google Sheets** with one click
+
+### 👀 **File Monitoring** 
+- **Watch folders** for new files
+- **Process automatically** when files are added
+- **Real-time notifications** via Slack
+
+### 🖥️ **Two Interfaces**
+- **GUI**: Easy point-and-click interface
+- **CLI**: Command-line for automation and scripting
+
+## 📖 Usage Examples
+
+### GUI Mode (Default)
 ```bash
-# 1 – Create env
-conda env create -f environment.yml
-conda activate sheets-bot
-
-# 2 – Run tests
-pytest -q
-
-# 3 – Install pre-commit hooks (optional)
-pip install pre-commit && pre-commit install
+python SheetsBot.py
 ```
+Click through the intuitive interface to:
+- Process single files
+- Set up folder monitoring
+- Configure settings
 
-### Development Workflow
-
-1. **Write tests first** (TDD approach)
-2. **Implement functionality** to make tests pass
-3. **Run quality checks**:
-   ```bash
-   ruff check .             # Linting
-   black --check .          # Formatting check
-   pytest --cov=. --cov-report=term-missing  # Tests with coverage
-   ```
-
-### Usage Examples
-
-#### CLI File Parser
+### CLI Mode
 ```bash
-# Parse a CSV file and display cleaned DataFrame
-python cli.py --file samples/data.csv --once
+# Process a single file
+python SheetsBot.py --file data.csv --push
 
-# Parse an Excel file and display cleaned DataFrame  
-python cli.py --file samples/data.xlsx --once
+# Watch a folder for changes
+python SheetsBot.py --watch --folder ./incoming
 
-# Parse and push to Google Sheets
-python cli.py --file samples/data.csv --push
-python cli.py --file samples/data.xlsx --push
+# Get help
+python SheetsBot.py --help
 ```
 
-**Sample Output:**
-```
-       Name  Age        City
-   John Doe   30    New York
- Jane Smith   25 Los Angeles
-Bob Johnson   35     Chicago
-```
+### File Processing
+Place your CSV or Excel files in the `samples/` folder or any folder you're monitoring. SheetsBot will:
+1. **Parse** the file automatically
+2. **Clean** the data (remove duplicates, standardize formats)
+3. **Upload** to your Google Sheet
+4. **Notify** you via Slack (if configured)
 
-**Sample Output with --push:**
-```
-Data pushed to: https://docs.google.com/spreadsheets/d/your-sheet-id/edit#gid=0
-```
-
-#### Live Watch Demo
-```bash
-# Live watch demo - monitors incoming files and processes them automatically
-python cli.py --watch
-```
-
-Monitor a specific folder for incoming CSV/XLSX files. When files are detected, the CLI will:
-1. Parse the file automatically
-2. Push data to Google Sheets
-3. Compute row differences (added/updated/deleted)
-4. Send Slack notification with summary
-5. Display progress in terminal
-
-**Sample Output:**
-```
-Watching folder: ./watch
-File patterns: ['*.csv', '*.xlsx']
-Press Ctrl+C to stop...
-Sheets URL: https://docs.google.com/spreadsheets/d/your-sheet-id/edit#gid=0  |  +3 / 0 / 0
-```
-
-#### File Watcher Demo
-```bash
-# Run the interactive file watcher demo
-python -m app.watcher_demo
-
-# Monitor files programmatically
-python -c "
-from app.watcher import Watcher
-from pathlib import Path
-
-def callback(path): print(f'File detected: {path}')
-w = Watcher(); w.start(callback)
-# Watcher runs in background...
-"
-```
-
-#### Slack Notifications
-```bash
-# Send diff summary to Slack channel
-python -c "
-from app.notifier import SlackNotifier
-
-# Configure via settings.toml or directly
-notifier = SlackNotifier.from_settings()
-diff = {'added': 3, 'updated': 1, 'deleted': 0}
-sheet_url = 'https://docs.google.com/spreadsheets/d/your-sheet-id/edit'
-success = notifier.post_summary(diff, sheet_url)
-"
-```
-
-**Slack Setup**: Configure your webhook URL in `config/settings.toml` under `[slack]` section. See [Slack Incoming Webhooks documentation](https://api.slack.com/messaging/webhooks) for webhook URL setup.
-
-### Project Structure
+## 📁 Project Structure
 
 ```
-sheets-bot/
-├── environment.yml       # Conda environment specification
-├── .cursorrules         # Development guidelines
-├── app/                 # Application source code
-│   ├── watcher.py       # File monitoring system
-│   ├── sheets_client.py # Google Sheets integration
-│   └── watcher_demo.py  # Demo script
-├── config/
-│   └── settings.toml    # Configuration file
-├── tests/               # Test suite
-└── docs/                # Documentation
+SheetsBot/
+├── SheetsBot.py          # 👆 Main launcher - double-click to run!
+├── src/                  # Application code
+├── config/               # Configuration files
+├── samples/              # Example data files
+├── watch/                # Default folder for monitoring
+├── README.md             # This file
+├── LICENSE               # Open source license
+└── requirements.txt      # Dependencies
 ```
 
-## Features
+## ⚙️ Configuration Files
 
-- **Conda Environment**: Reproducible development setup with pinned dependencies
-- **Quality Gates**: Black, Ruff, pytest with 90%+ coverage requirement
-- **TDD/BDD**: Test-first development approach
-- **Google Sheets Integration**: Push DataFrames directly to Google Sheets
-- **WSL Optimized**: Tested on Ubuntu WSL with Miniconda
+- **`config/creds.json`** - Google Sheets API credentials (you create this)
+- **`config/settings.toml`** - Application settings (Slack, folders, etc.)
+- **`samples/`** - Place your test files here
 
-## Requirements
+## 🆘 Troubleshooting
 
-- Python 3.11+
-- Miniconda or Anaconda
-- Ubuntu WSL (for WSL users)
+### Common Issues
 
-## Contributing
+**"Module not found" errors**
+- Run: `pip install -r requirements.txt`
+- Or just run `SheetsBot.py` - it auto-installs dependencies
 
-1. Follow TDD principles - write failing tests first
-2. Ensure all quality gates pass before committing
-3. Use conventional commit messages
-4. Maintain test coverage above 90%
+**"Credentials not found"**
+- Make sure `config/creds.json` exists with your Google API credentials
+- See INSTALLATION.md for detailed setup
 
-## License
+**"Permission denied"**
+- Make sure your Google service account has access to your spreadsheet
+- Share the spreadsheet with the service account email
 
-TBD 
+### Need Help?
+- Check `INSTALLATION.md` for detailed setup instructions
+- Look at `samples/` for example files
+- All features work without configuration in demo mode
+
+## 📄 License
+
+MIT License - Feel free to use, modify, and distribute!
+
+---
+
+**🎯 Ready to automate your Google Sheets workflow?**  
+**Just double-click `SheetsBot.py` and get started!** 
