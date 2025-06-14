@@ -33,7 +33,7 @@ jobs:
     - name: pytest
       run: |
         # Run tests excluding GUI and packaging tests that require additional infrastructure
-        pytest -q --cov=. --cov-fail-under=80 \
+        pytest -q --cov=. --cov-fail-under=90 \
           --ignore=tests/test_gui_functional.py \
           --ignore=tests/test_gui_skeleton.py \
           --ignore=tests/test_packaging.py \
