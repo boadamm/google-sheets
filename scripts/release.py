@@ -10,7 +10,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional
 
 
 def get_current_version() -> str:
@@ -98,7 +98,9 @@ def run_tests() -> bool:
             print("✅ All tests passed")
             return True
         else:
-            print(f"❌ Tests failed:\n{result.stdout}\n{result.stderr}")
+            print("❌ Tests failed:")
+            print(result.stdout)
+            print(result.stderr)
             return False
     except FileNotFoundError:
         print("⚠️  pytest not found, skipping tests")
@@ -120,10 +122,12 @@ def run_quality_checks() -> bool:
             if result.returncode == 0:
                 print(f"✅ {name} passed")
             else:
-                print(f"❌ {name} failed:\n{result.stdout}\n{result.stderr}")
+                print("❌ " + name + " failed:")
+                print(result.stdout)
+                print(result.stderr)
                 return False
         except FileNotFoundError:
-            print(f"⚠️  {name} tool not found, skipping")
+            print("⚠️  " + name + " tool not found, skipping")
     
     return True
 
@@ -131,7 +135,7 @@ def run_quality_checks() -> bool:
 def create_git_tag(version: str) -> None:
     """Create and push git tag."""
     tag_name = f"v{version}"
-    print(f"🏷️  Creating git tag {tag_name}...")
+    print("🏷️  Creating git tag " + tag_name + "...")
     
     subprocess.run(["git", "add", "."], check=True)
     subprocess.run(["git", "commit", "-m", f"chore: bump version to {version}"], check=True)
@@ -139,7 +143,7 @@ def create_git_tag(version: str) -> None:
     subprocess.run(["git", "push"], check=True)
     subprocess.run(["git", "push", "--tags"], check=True)
     
-    print(f"✅ Created and pushed tag {tag_name}")
+    print("✅ Created and pushed tag " + tag_name)
 
 
 def main():
@@ -181,7 +185,7 @@ def main():
         if args.dry_run:
             print("🔍 DRY RUN - No changes will be made")
             print(f"   - Would update version to {new_version}")
-            print(f"   - Would update CHANGELOG.md")
+            print("   - Would update CHANGELOG.md")
             print(f"   - Would create git tag v{new_version}")
             return
         
@@ -205,8 +209,8 @@ def main():
         create_git_tag(new_version)
         
         print(f"🎉 Release {new_version} created successfully!")
-        print(f"   GitHub Actions will now build and publish the release.")
-        print(f"   Visit: https://github.com/boadamm/demoproject/releases")
+        print("   GitHub Actions will now build and publish the release.")
+        print("   Visit: https://github.com/boadamm/demoproject/releases")
         
     except Exception as e:
         print(f"❌ Release failed: {e}")
