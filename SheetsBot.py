@@ -70,13 +70,17 @@ def setup_config():
         example_file = config_dir / "creds.example.json"
         if example_file.exists():
             print("\n⚠️  Google Sheets credentials not found!")
-            print(f"📝 Please copy {example_file} to {creds_file}")
-            print("   and add your Google Sheets API credentials.")
-            print("\n📖 See INSTALLATION.md for setup instructions.")
+            print("📝 Don't worry! The app includes an easy setup wizard.")
+            print("   When the GUI opens, go to the '⚙️ Configuration' tab")
+            print("   to set up your Google Sheets API credentials easily.")
+            print("\n📖 For manual setup, see README.md for detailed instructions.")
             
-            choice = input("\nWould you like to continue without credentials? (y/N): ")
-            if choice.lower() != 'y':
+            choice = input("\nWould you like to continue to the GUI? (Y/n): ")
+            if choice.lower() == 'n':
                 return False
+        else:
+            print("\n⚠️  Google Sheets credentials not found!")
+            print("📝 Use the Configuration tab in the GUI to set up your credentials.")
     
     return True
 

@@ -15,6 +15,7 @@ gspread-dataframe==3.3.1
 # Configuration parsing
 pyyaml==6.0.1
 tomli==2.0.1
+tomli-w==1.0.0
 
 # HTTP requests for Slack notifications
 requests==2.31.0

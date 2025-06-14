@@ -22,6 +22,7 @@ from PySide6.QtGui import QAction
 
 from .manual_tab import ManualSyncTab
 from .watcher_tab import WatcherTab
+from .config_tab import ConfigTab
 
 
 class GuiLogHandler(logging.Handler):
@@ -124,11 +125,14 @@ class MainWindow(QMainWindow):
         self.tab_widget = QTabWidget()
 
         # Create and add tabs
+        self.config_tab = ConfigTab()
         self.manual_sync_tab = ManualSyncTab()
         self.watcher_tab = WatcherTab()
 
-        self.tab_widget.addTab(self.manual_sync_tab, "Manual Sync")
-        self.tab_widget.addTab(self.watcher_tab, "Watcher")
+        # Add Configuration tab first (most important for first-time users)
+        self.tab_widget.addTab(self.config_tab, "⚙️ Configuration")
+        self.tab_widget.addTab(self.manual_sync_tab, "📄 Manual Sync")
+        self.tab_widget.addTab(self.watcher_tab, "👀 Watcher")
 
         # Add tab widget to layout
         layout.addWidget(self.tab_widget)
@@ -202,7 +206,7 @@ class MainWindow(QMainWindow):
         Args:
             index: Index of the newly selected tab
         """
-        tab_names = ["Manual Sync", "Watcher"]
+        tab_names = ["⚙️ Configuration", "📄 Manual Sync", "👀 Watcher"]
         if 0 <= index < len(tab_names):
             logger = logging.getLogger("sheets-bot")
             logger.info(f"Switched to {tab_names[index]} tab")
