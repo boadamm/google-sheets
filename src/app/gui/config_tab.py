@@ -19,7 +19,7 @@ except ImportError:
     TOMLI_W_AVAILABLE = False
     print("⚠️  tomli_w not available - configuration saving may be limited")
 
-from PySide6.QtCore import Qt, Signal, QThread, pyqtSignal
+from PySide6.QtCore import Qt, Signal, QThread
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -44,7 +44,7 @@ from ..integrations.sheets_client import SheetsClient, SheetsPushError
 class CredentialsTestWorker(QThread):
     """Worker thread for testing Google Sheets API credentials."""
     
-    test_completed = pyqtSignal(bool, str)  # success, message
+    test_completed = Signal(bool, str)  # success, message
     
     def __init__(self, creds_data: Dict[str, Any], spreadsheet_id: str, worksheet_name: str):
         """Initialize the credentials test worker.
