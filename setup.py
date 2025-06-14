@@ -22,7 +22,7 @@ if requirements_path.exists():
 
 setup(
     name="sheetsbot",
-    version="1.0.0",
+    version="1.1.0",
     author="SheetsBot Team",
     author_email="support@sheetsbot.com",
     description="Google Sheets automation tool with file monitoring and Slack integration",

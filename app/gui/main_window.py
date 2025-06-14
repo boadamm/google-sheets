@@ -271,7 +271,7 @@ def run_gui() -> None:
 
     # Set application properties
     app.setApplicationName("Sheets Bot")
-    app.setApplicationVersion("1.0.0")
+    app.setApplicationVersion("1.1.0")
     app.setOrganizationName("Sheets Bot Team")
 
     # Create and show main window
