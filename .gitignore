@@ -144,4 +144,19 @@ slack_token.txt
 
 # Configuration files that might contain sensitive data
 config/local_settings.toml
-config/production_settings.toml 
+config/production_settings.toml
+
+# =============================================================================
+# Testing and Debug Files (Development Only)
+# =============================================================================
+
+# Test scripts for debugging import issues
+test_imports.py
+test_gui_import.py
+debug_structure.py
+test_full_gui_launch.py
+TESTING_README.md
+
+# Any other debug/test files
+debug_*.py
+test_*.py 
