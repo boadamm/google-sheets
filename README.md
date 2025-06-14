@@ -1,7 +1,7 @@
 # sheets-bot
 
 [![CI Pipeline](https://github.com/boadamm/demoproject/actions/workflows/ci.yml/badge.svg)](https://github.com/boadamm/demoproject/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen)](https://github.com/boadamm/demoproject/actions)
+[![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)](https://github.com/boadamm/demoproject/actions)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Linting: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Latest Release](https://img.shields.io/github/v/release/boadamm/demoproject)](https://github.com/boadamm/demoproject/releases/latest)
