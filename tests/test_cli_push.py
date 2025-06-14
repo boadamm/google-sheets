@@ -28,7 +28,7 @@ class TestCLIPush:
         test_env = os.environ.copy()
         test_env["PYTEST_CURRENT_TEST"] = "test_cli_push_success"
 
-        with patch("cli.SheetsClient") as mock_client_class:
+        with patch("cli_main.SheetsClient") as mock_client_class:
             # Mock the SheetsClient class and its push_dataframe method
             mock_client = MagicMock()
             mock_client.push_dataframe.return_value = "https://fake.url/tab"
@@ -38,18 +38,19 @@ class TestCLIPush:
             test_script = f"""
 import sys
 sys.path.insert(0, '.')
+sys.path.insert(0, './src')
 from unittest.mock import patch, MagicMock
-import cli
 
 # Mock SheetsClient
-with patch('cli.SheetsClient') as mock_client_class:
+with patch('cli_main.SheetsClient') as mock_client_class:
     mock_client = MagicMock()
     mock_client.push_dataframe.return_value = "https://fake.url/tab"
     mock_client_class.return_value = mock_client
     
     # Call the CLI function directly with args
     sys.argv = ['cli.py', '--file', '{sample_file}', '--push']
-    cli.main()
+    from cli_main import main
+    main()
 """
 
             # Write test script to temporary file
@@ -100,15 +101,16 @@ import pandas as pd
 import cli
 
 # Mock SheetsClient
-with patch('cli.SheetsClient') as mock_client_class:
+with patch('cli_main.SheetsClient') as mock_client_class:
     mock_client = MagicMock()
     mock_client.push_dataframe.return_value = "https://fake.url/tab"
     mock_client_class.return_value = mock_client
     
     # Call the CLI function directly with args
     sys.argv = ['cli.py', '--file', '{sample_file}', '--push']
+    from cli_main import main
     try:
-        cli.main()
+        main()
     except SystemExit:
         pass
     
@@ -179,19 +181,20 @@ with patch('cli.SheetsClient') as mock_client_class:
         test_script = """
 import sys
 sys.path.insert(0, '.')
+sys.path.insert(0, './src')
 from unittest.mock import patch, MagicMock
 from app.integrations.sheets_client import SheetsPushError
-import cli
 
 # Mock SheetsClient to raise error
-with patch('cli.SheetsClient') as mock_client_class:
+with patch('cli_main.SheetsClient') as mock_client_class:
     mock_client = MagicMock()
     mock_client.push_dataframe.side_effect = SheetsPushError("Failed to authenticate with Google Sheets")
     mock_client_class.return_value = mock_client
     
     # Call the CLI function directly with args
     sys.argv = ['cli.py', '--file', 'samples/data.csv', '--push']
-    cli.main()
+    from cli_main import main
+    main()
 """
 
         # Write test script to temporary file
@@ -222,16 +225,17 @@ with patch('cli.SheetsClient') as mock_client_class:
         test_script = """
 import sys
 sys.path.insert(0, '.')
+sys.path.insert(0, './src')
 from unittest.mock import patch
-import cli
 
 # Mock SheetsClient initialization to raise FileNotFoundError
-with patch('cli.SheetsClient') as mock_client_class:
+with patch('cli_main.SheetsClient') as mock_client_class:
     mock_client_class.side_effect = FileNotFoundError("Credentials file not found: config/creds.json")
     
     # Call the CLI function directly with args
     sys.argv = ['cli.py', '--file', 'samples/data.csv', '--push']
-    cli.main()
+    from cli_main import main
+    main()
 """
 
         # Write test script to temporary file
@@ -349,17 +353,18 @@ with patch('cli.SheetsClient') as mock_client_class:
         test_script = """
 import sys
 sys.path.insert(0, '.')
+sys.path.insert(0, './src')
 from unittest.mock import patch
 from app.core.parser import UnsupportedFileTypeError
-import cli
 
 # Mock parse_file to raise ValueError
-with patch('cli.parse_file') as mock_parse:
+with patch('cli_main.parse_file') as mock_parse:
     mock_parse.side_effect = ValueError("Test ValueError")
     
     # Call the CLI function directly with args (no push flag)
     sys.argv = ['cli.py', '--file', 'samples/data.csv', '--once']
-    cli.main()
+    from cli_main import main
+    main()
 """
 
         # Write test script to temporary file
@@ -390,16 +395,17 @@ with patch('cli.parse_file') as mock_parse:
         test_script = """
 import sys
 sys.path.insert(0, '.')
+sys.path.insert(0, './src')
 from unittest.mock import patch
-import cli
 
 # Mock parse_file to raise unexpected exception
-with patch('cli.parse_file') as mock_parse:
+with patch('cli_main.parse_file') as mock_parse:
     mock_parse.side_effect = RuntimeError("Test unexpected error")
     
     # Call the CLI function directly with args
     sys.argv = ['cli.py', '--file', 'samples/data.csv', '--once']
-    cli.main()
+    from cli_main import main
+    main()
 """
 
         # Write test script to temporary file

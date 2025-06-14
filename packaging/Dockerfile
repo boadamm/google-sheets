@@ -15,7 +15,7 @@ RUN apk add --no-cache \
 WORKDIR /app
 
 # Copy requirements and install Python dependencies
-COPY requirements.txt .
+COPY packaging/requirements.txt .
 # Install only production dependencies (exclude dev/test packages)
 RUN pip install --no-cache-dir --user \
     watchdog==4.0.1 \
@@ -42,9 +42,9 @@ WORKDIR /app
 COPY --from=builder /root/.local /home/appuser/.local
 
 # Copy application code
-COPY app/ ./app/
+COPY src/app/ ./src/app/
 COPY config/ ./config/
-COPY cli.py ./cli.py
+COPY src/cli_main.py ./src/cli_main.py
 
 # Set ownership and permissions
 RUN chown -R appuser:appuser /app && \
@@ -58,7 +58,7 @@ ENV PATH=/home/appuser/.local/bin:$PATH
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import app; print('OK')" || exit 1
+    CMD python -c "import sys; sys.path.append('src'); import app; print('OK')" || exit 1
 
 # Default command
-CMD ["python", "-m", "app"] 
+CMD ["python", "src/cli_main.py"] 

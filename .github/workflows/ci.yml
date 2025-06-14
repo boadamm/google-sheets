@@ -21,7 +21,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         # Install requirements excluding pytest-qt to avoid GUI dependencies in CI
-        pip install -r requirements.txt
+        pip install -r packaging/requirements.txt
         pip uninstall -y pytest-qt
     
     - name: ruff
@@ -33,16 +33,17 @@ jobs:
     - name: pytest
       run: |
         # Run tests excluding GUI and packaging tests that require additional infrastructure
-        pytest -q --cov=. --cov-fail-under=90 \
+        pytest -q --cov=src/app --cov=src/cli_main.py --cov-fail-under=90 \
           --ignore=tests/test_gui_functional.py \
           --ignore=tests/test_gui_skeleton.py \
           --ignore=tests/test_packaging.py \
-          --cov-config=.coveragerc
+          --cov-config=tools/.coveragerc \
+          -c tools/pytest.ini
     
     - name: docker-build
       run: |
         # Build Docker image to ensure it builds successfully
-        docker build --quiet -t sheets-bot:ci .
+        docker build --quiet -t sheets-bot:ci -f packaging/Dockerfile .
     
     - name: Upload coverage artifact
       uses: actions/upload-artifact@v4

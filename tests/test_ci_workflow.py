@@ -103,15 +103,16 @@ class TestCIWorkflow:
         ), "Workflow must include --cov-fail-under=90 for pytest"
 
     def test_ci_workflow_includes_full_coverage(self):
-        """Assert that pytest runs with full coverage (--cov=.) not just app coverage."""
+        """Assert that pytest runs with source code coverage (--cov=src/app --cov=src/cli_main.py)."""
         workflow_file = Path(".github/workflows/ci.yml")
         if not workflow_file.exists():
             pytest.fail("CI workflow file does not exist")
 
         workflow_content = workflow_file.read_text()
         assert (
-            "--cov=." in workflow_content
-        ), "Workflow must include --cov=. for full project coverage"
+            "--cov=src/app" in workflow_content
+            and "--cov=src/cli_main.py" in workflow_content
+        ), "Workflow must include targeted coverage for source code"
 
     def test_docker_build_present(self):
         """Assert that Docker build step exists to verify image builds successfully."""

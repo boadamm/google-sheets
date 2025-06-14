@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 from pathlib import Path
 
 # Read README
-readme_path = Path(__file__).parent / "README.md"
+readme_path = Path(__file__).parent.parent / "README.md"
 long_description = (
     readme_path.read_text(encoding="utf-8") if readme_path.exists() else ""
 )
@@ -29,7 +29,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/boadamm/demoproject",
-    packages=find_packages(),
+    packages=find_packages(where="../src"),
+    package_dir={"": "../src"},
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: End Users/Desktop",
