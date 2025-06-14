@@ -8,11 +8,11 @@ from .integrations.sheets_client import SheetsClient, SheetsPushError
 from .integrations.notifier import SlackNotifier
 
 __all__ = [
-    'parse_file',
-    'UnsupportedFileTypeError',
-    'DeltaTracker', 
-    'Watcher',
-    'SheetsClient',
-    'SheetsPushError',
-    'SlackNotifier',
+    "parse_file",
+    "UnsupportedFileTypeError",
+    "DeltaTracker",
+    "Watcher",
+    "SheetsClient",
+    "SheetsPushError",
+    "SlackNotifier",
 ]

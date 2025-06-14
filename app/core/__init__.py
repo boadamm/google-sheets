@@ -1,1 +1,1 @@
-"""Core application functionality.""" 
+"""Core application functionality."""

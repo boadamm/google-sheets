@@ -18,9 +18,9 @@ class TestSheetsClient:
 
     def test_sheets_client_init_with_default_paths(self):
         """Test SheetsClient initialization with default config paths."""
-        with patch("app.integrations.sheets_client.Path.exists", return_value=True), patch(
-            "builtins.open", mock_open_for_configs()
-        ):
+        with patch(
+            "app.integrations.sheets_client.Path.exists", return_value=True
+        ), patch("builtins.open", mock_open_for_configs()):
             client = SheetsClient()
             assert client.creds_path == Path("config/creds.json")
             assert client.settings_path == Path("config/settings.toml")
@@ -30,9 +30,9 @@ class TestSheetsClient:
         custom_creds = Path("custom/creds.json")
         custom_settings = Path("custom/settings.toml")
 
-        with patch("app.integrations.sheets_client.Path.exists", return_value=True), patch(
-            "builtins.open", mock_open_for_configs()
-        ):
+        with patch(
+            "app.integrations.sheets_client.Path.exists", return_value=True
+        ), patch("builtins.open", mock_open_for_configs()):
             client = SheetsClient(
                 creds_path=custom_creds, settings_path=custom_settings
             )
@@ -71,9 +71,9 @@ class TestSheetsClient:
         mock_gc.open_by_key.return_value = mock_spreadsheet
         mock_spreadsheet.worksheet.return_value = mock_worksheet
 
-        with patch("app.integrations.sheets_client.Path.exists", return_value=True), patch(
-            "builtins.open", mock_open_for_configs()
-        ):
+        with patch(
+            "app.integrations.sheets_client.Path.exists", return_value=True
+        ), patch("builtins.open", mock_open_for_configs()):
             client = SheetsClient()
 
         df = pd.DataFrame({"Name": ["John", "Jane"], "Age": [30, 25]})
@@ -107,9 +107,9 @@ class TestSheetsClient:
         }
         mock_gc.open_by_key.side_effect = APIError(mock_response)
 
-        with patch("app.integrations.sheets_client.Path.exists", return_value=True), patch(
-            "builtins.open", mock_open_for_configs()
-        ):
+        with patch(
+            "app.integrations.sheets_client.Path.exists", return_value=True
+        ), patch("builtins.open", mock_open_for_configs()):
             client = SheetsClient()
 
         df = pd.DataFrame({"Name": ["John"], "Age": [30]})
@@ -143,9 +143,9 @@ class TestSheetsClient:
             "set_with_dataframe"
         )
 
-        with patch("app.integrations.sheets_client.Path.exists", return_value=True), patch(
-            "builtins.open", mock_open_for_configs()
-        ):
+        with patch(
+            "app.integrations.sheets_client.Path.exists", return_value=True
+        ), patch("builtins.open", mock_open_for_configs()):
             client = SheetsClient()
 
         df = pd.DataFrame({"A": [1, 2]})

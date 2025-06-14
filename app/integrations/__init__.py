@@ -1,1 +1,1 @@
-"""External service integrations (Google Sheets, Slack, etc.).""" 
+"""External service integrations (Google Sheets, Slack, etc.)."""
