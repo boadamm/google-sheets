@@ -5,9 +5,13 @@
 ## ⚡ Quick Start
 
 ### 🖱️ **One-Click Launch** (Recommended)
-1. **Download** the latest release
-2. **Double-click** `SheetsBot.py` 
-3. **Done!** The app will automatically install dependencies and launch
+1. **Download** the latest release from [Releases](https://github.com/boadamm/google-sheets/releases)
+2. **Extract** the ZIP file
+3. **Double-click** your platform's launcher:
+   - **Windows**: `SheetsBot.bat`
+   - **macOS**: `SheetsBot.command` 
+   - **Linux**: `SheetsBot.py`
+4. **Done!** The app will automatically install dependencies and launch
 
 ### 📋 Manual Installation
 ```bash
@@ -18,6 +22,19 @@ pip install -r requirements.txt
 # 3. Run the application
 python SheetsBot.py
 ```
+
+## 🖥️ **Platform Support**
+
+| Platform | Launcher | Python Command |
+|----------|----------|----------------|
+| **Windows** | `SheetsBot.bat` | `python SheetsBot.py` |
+| **macOS** | `SheetsBot.command` | `python3 SheetsBot.py` |
+| **Linux** | `SheetsBot.py` | `python3 SheetsBot.py` |
+
+### **macOS Setup Notes:**
+- Python 3 comes pre-installed on macOS 10.15+
+- If needed, install from [python.org](https://www.python.org/downloads/macos/) or using Homebrew: `brew install python`
+- Right-click `SheetsBot.command` → "Open" (first time only) to bypass Gatekeeper
 
 ## 🛠️ Setup (First Time Only)
 
@@ -54,7 +71,14 @@ python SheetsBot.py
 
 ### GUI Mode (Default)
 ```bash
-python SheetsBot.py
+# Windows
+SheetsBot.bat
+
+# macOS
+./SheetsBot.command
+
+# Linux
+python3 SheetsBot.py
 ```
 Click through the intuitive interface to:
 - Process single files
@@ -84,7 +108,9 @@ Place your CSV or Excel files in the `samples/` folder or any folder you're moni
 
 ```
 SheetsBot/
-├── SheetsBot.py          # 👆 Main launcher - double-click to run!
+├── SheetsBot.py          # 🐍 Main launcher (Linux/Universal)
+├── SheetsBot.bat         # 🪟 Windows launcher
+├── SheetsBot.command     # 🍎 macOS launcher
 ├── src/                  # Application code
 ├── config/               # Configuration files
 ├── samples/              # Example data files
@@ -106,15 +132,35 @@ SheetsBot/
 
 **"Module not found" errors**
 - Run: `pip install -r requirements.txt`
-- Or just run `SheetsBot.py` - it auto-installs dependencies
+- Or just run your platform's launcher - it auto-installs dependencies
 
 **"Credentials not found"**
 - Make sure `config/creds.json` exists with your Google API credentials
 - See INSTALLATION.md for detailed setup
 
-**"Permission denied"**
-- Make sure your Google service account has access to your spreadsheet
-- Share the spreadsheet with the service account email
+**"Permission denied" (macOS)**
+- Right-click `SheetsBot.command` → "Open" (first time only)
+- Or run: `chmod +x SheetsBot.command`
+
+**"Permission denied" (Linux)**
+- Run: `chmod +x SheetsBot.py`
+
+### Platform-Specific Notes
+
+**macOS:**
+- Uses `python3` command (Python 3 pre-installed)
+- May require Gatekeeper approval for first run
+- Supports both Intel and Apple Silicon Macs
+
+**Windows:**
+- Uses `python` command
+- Install Python from [python.org](https://www.python.org/downloads/) with "Add to PATH" checked
+- Works on Windows 10/11
+
+**Linux:**
+- Uses `python3` command
+- Install via package manager: `sudo apt install python3 python3-pip`
+- Tested on Ubuntu, should work on most distributions
 
 ### Need Help?
 - Check `INSTALLATION.md` for detailed setup instructions
@@ -128,4 +174,4 @@ MIT License - Feel free to use, modify, and distribute!
 ---
 
 **🎯 Ready to automate your Google Sheets workflow?**  
-**Just double-click `SheetsBot.py` and get started!** 
+**Download the latest release and double-click your platform's launcher!**
