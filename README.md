@@ -13,11 +13,13 @@ A production-quality Python application for Google Sheets automation using Minic
 
 ## Downloads
 
-> 🚧 **Desktop applications coming soon!** 
-> 
-> We're preparing self-contained desktop applications for Windows and Linux. 
-> In the meantime, you can use the CLI version below or build from source.
-> 
+Get the latest desktop applications for your platform:
+
+### Latest Release
+
+- **Windows**: [Download SheetsBot-Windows-signed.zip](https://github.com/boadamm/demoproject/releases/latest/download/SheetsBot-Windows-signed.zip)
+- **Linux**: [Download SheetsBot-Linux.zip](https://github.com/boadamm/demoproject/releases/latest/download/SheetsBot-Linux.zip)
+
 > 💡 **Want to build now?** Run `make build-gui` to create your own desktop app.
 
 
