@@ -98,7 +98,7 @@ Bob Johnson,35,"Chicago"
     ):
         """Test basic watch mode functionality with file processing."""
         pytest.skip("Skipping subprocess test in favor of direct testing method")
-        
+
         # Create a sample CSV file in the temp directory
         sample_file = temp_incoming_dir / "data.csv"
         sample_file.write_text(sample_csv_content)
