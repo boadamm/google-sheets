@@ -59,6 +59,29 @@ def check_and_install_requirements():
     else:
         print("✅ All dependencies are already installed!")
 
+def setup_python_path():
+    """Set up Python path for imports to work correctly."""
+    # Get the directory where this script is located
+    script_dir = Path(__file__).parent.resolve()
+    src_path = script_dir / "src"
+    
+    # Add both the script directory and src directory to Python path
+    paths_to_add = [str(src_path), str(script_dir)]
+    
+    for path in paths_to_add:
+        if path not in sys.path:
+            sys.path.insert(0, path)
+    
+    # Also set PYTHONPATH environment variable for subprocess compatibility
+    current_pythonpath = os.environ.get('PYTHONPATH', '')
+    new_paths = [p for p in paths_to_add if p not in current_pythonpath.split(os.pathsep)]
+    
+    if new_paths:
+        if current_pythonpath:
+            os.environ['PYTHONPATH'] = os.pathsep.join(new_paths + [current_pythonpath])
+        else:
+            os.environ['PYTHONPATH'] = os.pathsep.join(new_paths)
+
 def setup_config():
     """Ensure configuration is set up."""
     config_dir = Path("config")
@@ -88,12 +111,10 @@ def setup_config():
 def launch_gui():
     """Launch the GUI application."""
     try:
-        # Add src to path
-        src_path = Path(__file__).parent / "src"
-        if str(src_path) not in sys.path:
-            sys.path.insert(0, str(src_path))
-        
         print("\n🚀 Launching SheetsBot GUI...")
+        
+        # Set up Python path before any imports
+        setup_python_path()
         
         # Import and run the GUI
         from app.gui.main_window import run_gui
@@ -116,13 +137,11 @@ def launch_gui():
 def launch_cli():
     """Launch the CLI application."""
     try:
-        # Add src to path
-        src_path = Path(__file__).parent / "src"
-        if str(src_path) not in sys.path:
-            sys.path.insert(0, str(src_path))
-        
         print("\n💻 Starting SheetsBot CLI...")
         print("Use --help for available commands")
+        
+        # Set up Python path before any imports
+        setup_python_path()
         
         from cli_main import main
         

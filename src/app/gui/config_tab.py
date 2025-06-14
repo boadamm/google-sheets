@@ -38,7 +38,12 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QFont, QPixmap, QIcon
 
-from ..integrations.sheets_client import SheetsClient, SheetsPushError
+# Robust import with fallback for distributed environments
+try:
+    from ..integrations.sheets_client import SheetsClient, SheetsPushError
+except ImportError:
+    # Fallback for distributed environments
+    from app.integrations.sheets_client import SheetsClient, SheetsPushError
 
 
 class CredentialsTestWorker(QThread):
@@ -158,6 +163,9 @@ class ConfigTab(QWidget):
         
         # Spreadsheet configuration section
         self._create_spreadsheet_config_section(content_layout)
+        
+        # Slack configuration section
+        self._create_slack_config_section(content_layout)
         
         # Test connection section
         self._create_test_section(content_layout)
@@ -309,6 +317,78 @@ class ConfigTab(QWidget):
         
         layout.addWidget(sheet_group)
     
+    def _create_slack_config_section(self, layout: QVBoxLayout) -> None:
+        """Create the Slack API configuration section."""
+        # Slack Config Group
+        slack_group = QGroupBox("💬 Slack Notifications (Optional)")
+        slack_group.setStyleSheet("""
+            QGroupBox {
+                font-weight: bold;
+                font-size: 12pt;
+                color: #2c3e50;
+                border: 2px solid #bdc3c7;
+                border-radius: 8px;
+                margin-top: 1ex;
+                padding-top: 10px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0px 5px 0px 5px;
+            }
+        """)
+        
+        slack_layout = QVBoxLayout(slack_group)
+        slack_layout.setSpacing(10)
+        
+        # Instructions for Slack setup
+        slack_instructions = QLabel(
+            "📋 <b>Slack Setup (Optional):</b><br>"
+            "1. Go to your Slack workspace settings<br>"
+            "2. Create an <a href='https://api.slack.com/messaging/webhooks'>Incoming Webhook</a><br>"
+            "3. Choose the channel where you want notifications<br>"
+            "4. Copy the webhook URL and paste it below<br>"
+            "5. Leave other fields as default or customize them"
+        )
+        slack_instructions.setWordWrap(True)
+        slack_instructions.setOpenExternalLinks(True)
+        slack_instructions.setStyleSheet("color: #2c3e50; padding: 10px; background-color: #ecf0f1; border-radius: 4px; margin-bottom: 10px;")
+        slack_layout.addWidget(slack_instructions)
+        
+        # Form layout for Slack fields
+        form_layout = QFormLayout()
+        form_layout.setSpacing(10)
+        
+        # Webhook URL (required)
+        self.slack_webhook_input = QLineEdit()
+        self.slack_webhook_input.setPlaceholderText("https://hooks.slack.com/services/YOUR/WEBHOOK/URL")
+        self.slack_webhook_input.setStyleSheet("padding: 8px; font-size: 10pt;")
+        form_layout.addRow("Webhook URL:", self.slack_webhook_input)
+        
+        # Channel (optional)
+        self.slack_channel_input = QLineEdit()
+        self.slack_channel_input.setPlaceholderText("#general")
+        self.slack_channel_input.setText("#general")  # Default value
+        self.slack_channel_input.setStyleSheet("padding: 8px; font-size: 10pt;")
+        form_layout.addRow("Channel:", self.slack_channel_input)
+        
+        # Username (optional)
+        self.slack_username_input = QLineEdit()
+        self.slack_username_input.setPlaceholderText("Sheets-Bot")
+        self.slack_username_input.setText("Sheets-Bot")  # Default value
+        self.slack_username_input.setStyleSheet("padding: 8px; font-size: 10pt;")
+        form_layout.addRow("Bot Username:", self.slack_username_input)
+        
+        # Icon Emoji (optional)
+        self.slack_icon_input = QLineEdit()
+        self.slack_icon_input.setPlaceholderText(":robot_face:")
+        self.slack_icon_input.setText(":robot_face:")  # Default value
+        self.slack_icon_input.setStyleSheet("padding: 8px; font-size: 10pt;")
+        form_layout.addRow("Bot Icon:", self.slack_icon_input)
+        
+        slack_layout.addLayout(form_layout)
+        layout.addWidget(slack_group)
+    
     def _create_test_section(self, layout: QVBoxLayout) -> None:
         """Create the test connection section."""
         # Test Group
@@ -332,7 +412,10 @@ class ConfigTab(QWidget):
         
         test_layout = QVBoxLayout(test_group)
         
-        # Test button
+        # Test buttons layout
+        test_buttons_layout = QHBoxLayout()
+        
+        # Google Sheets test button
         self.test_button = QPushButton("🔍 Test Google Sheets Connection")
         self.test_button.setStyleSheet("""
             QPushButton {
@@ -357,6 +440,34 @@ class ConfigTab(QWidget):
         """)
         self.test_button.clicked.connect(self._test_connection)
         
+        # Slack test button
+        self.test_slack_button = QPushButton("💬 Test Slack Notification")
+        self.test_slack_button.setStyleSheet("""
+            QPushButton {
+                background-color: #e74c3c;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 12px;
+                font-size: 11pt;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #c0392b;
+            }
+            QPushButton:pressed {
+                background-color: #a93226;
+            }
+            QPushButton:disabled {
+                background-color: #bdc3c7;
+                color: #7f8c8d;
+            }
+        """)
+        self.test_slack_button.clicked.connect(self._test_slack_connection)
+        
+        test_buttons_layout.addWidget(self.test_button)
+        test_buttons_layout.addWidget(self.test_slack_button)
+        
         # Progress bar (hidden by default)
         self.test_progress = QProgressBar()
         self.test_progress.setVisible(False)
@@ -378,7 +489,7 @@ class ConfigTab(QWidget):
         self.test_result_label.setWordWrap(True)
         self.test_result_label.setStyleSheet("padding: 10px; font-size: 10pt;")
         
-        test_layout.addWidget(self.test_button)
+        test_layout.addLayout(test_buttons_layout)
         test_layout.addWidget(self.test_progress)
         test_layout.addWidget(self.test_result_label)
         
@@ -485,6 +596,13 @@ class ConfigTab(QWidget):
                 self.spreadsheet_id_input.setText(sheets_config.get("spreadsheet_id", ""))
                 self.worksheet_name_input.setText(sheets_config.get("worksheet_name", "Sheet1"))
                 
+                # Load Slack configuration
+                slack_config = settings_data.get("slack", {})
+                self.slack_webhook_input.setText(slack_config.get("webhook_url", ""))
+                self.slack_channel_input.setText(slack_config.get("channel", "#general"))
+                self.slack_username_input.setText(slack_config.get("username", "Sheets-Bot"))
+                self.slack_icon_input.setText(slack_config.get("icon_emoji", ":robot_face:"))
+                
         except Exception as e:
             self.logger.warning(f"Could not load existing configuration: {e}")
             self.status_label.setText(f"⚠️ Could not load existing configuration: {e}")
@@ -524,6 +642,93 @@ class ConfigTab(QWidget):
         )
         self.test_worker.test_completed.connect(self._on_test_completed)
         self.test_worker.start()
+    
+    def _test_slack_connection(self) -> None:
+        """Test the Slack webhook connection."""
+        webhook_url = self.slack_webhook_input.text().strip()
+        
+        if not webhook_url:
+            self.test_result_label.setText("❌ Please enter a Slack webhook URL to test")
+            self.test_result_label.setStyleSheet("""
+                QLabel {
+                    background-color: #fadbd8;
+                    border: 2px solid #e74c3c;
+                    border-radius: 6px;
+                    padding: 10px;
+                    font-size: 10pt;
+                    color: #c0392b;
+                    font-weight: bold;
+                }
+            """)
+            return
+        
+        try:
+            # Show testing progress
+            self.test_slack_button.setEnabled(False)
+            self.test_slack_button.setText("🔄 Testing Slack...")
+            self.test_result_label.setText("Testing Slack webhook connection...")
+            
+            # Create test notification
+            from app.integrations.notifier import SlackNotifier
+            
+            test_notifier = SlackNotifier(
+                webhook_url=webhook_url,
+                channel=self.slack_channel_input.text().strip() or "#general",
+                username=self.slack_username_input.text().strip() or "Sheets-Bot",
+                icon_emoji=self.slack_icon_input.text().strip() or ":robot_face:"
+            )
+            
+            # Send test message
+            test_diff = {"added": 3, "updated": 2, "deleted": 1}
+            test_url = "https://docs.google.com/spreadsheets/d/test"
+            
+            success = test_notifier.post_summary(test_diff, test_url)
+            
+            if success:
+                self.test_result_label.setText("✅ Slack notification sent successfully! Check your Slack channel.")
+                self.test_result_label.setStyleSheet("""
+                    QLabel {
+                        background-color: #d5f4e6;
+                        border: 2px solid #27ae60;
+                        border-radius: 6px;
+                        padding: 10px;
+                        font-size: 10pt;
+                        color: #1e8449;
+                        font-weight: bold;
+                    }
+                """)
+            else:
+                self.test_result_label.setText("❌ Failed to send Slack notification. Check your webhook URL.")
+                self.test_result_label.setStyleSheet("""
+                    QLabel {
+                        background-color: #fadbd8;
+                        border: 2px solid #e74c3c;
+                        border-radius: 6px;
+                        padding: 10px;
+                        font-size: 10pt;
+                        color: #c0392b;
+                        font-weight: bold;
+                    }
+                """)
+        
+        except Exception as e:
+            self.test_result_label.setText(f"❌ Slack test failed: {str(e)}")
+            self.test_result_label.setStyleSheet("""
+                QLabel {
+                    background-color: #fadbd8;
+                    border: 2px solid #e74c3c;
+                    border-radius: 6px;
+                    padding: 10px;
+                    font-size: 10pt;
+                    color: #c0392b;
+                    font-weight: bold;
+                }
+            """)
+        
+        finally:
+            # Reset button state
+            self.test_slack_button.setEnabled(True)
+            self.test_slack_button.setText("💬 Test Slack Notification")
     
     def _on_test_completed(self, success: bool, message: str) -> None:
         """Handle test completion.
@@ -601,18 +806,22 @@ class ConfigTab(QWidget):
                     "spreadsheet_id": self.spreadsheet_id_input.text().strip(),
                     "worksheet_name": self.worksheet_name_input.text().strip()
                 },
-                "slack": {
-                    "webhook_url": "https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK",
-                    "channel": "#general",
-                    "username": "Sheets-Bot",
-                    "icon_emoji": ":robot_face:"
-                },
                 "watcher": {
                     "folder": "./watch",
                     "patterns": ["*.csv", "*.xlsx"],
                     "poll_interval": 5
                 }
             }
+            
+            # Add Slack configuration only if webhook URL is provided
+            slack_webhook = self.slack_webhook_input.text().strip()
+            if slack_webhook:
+                settings_data["slack"] = {
+                    "webhook_url": slack_webhook,
+                    "channel": self.slack_channel_input.text().strip() or "#general",
+                    "username": self.slack_username_input.text().strip() or "Sheets-Bot",
+                    "icon_emoji": self.slack_icon_input.text().strip() or ":robot_face:"
+                }
             
             # Save settings
             settings_path = Path("config/settings.toml")
@@ -625,8 +834,12 @@ class ConfigTab(QWidget):
                 with open(settings_path, 'w') as f:
                     f.write(toml_content)
             
-            # Update status
-            self.status_label.setText("✅ Configuration saved successfully! You can now use the other tabs to sync your data.")
+            # Update status message based on what was configured
+            slack_configured = bool(slack_webhook)
+            if slack_configured:
+                self.status_label.setText("✅ Configuration saved successfully! Google Sheets and Slack notifications are configured. You can now use the other tabs to sync your data.")
+            else:
+                self.status_label.setText("✅ Google Sheets configuration saved successfully! You can add Slack notifications later if needed. You can now use the other tabs to sync your data.")
             self.status_label.setStyleSheet("""
                 QLabel {
                     background-color: #d5f4e6;
@@ -645,14 +858,33 @@ class ConfigTab(QWidget):
             self.logger.info("Configuration saved successfully")
             
             # Show success message
+            if slack_configured:
+                success_message = (
+                    "✅ Configuration saved successfully!\n\n"
+                    "Google Sheets API: ✅ Configured\n"
+                    "Slack Notifications: ✅ Configured\n\n"
+                    "You can now:\n"
+                    "• Use the Manual Sync tab to upload files\n"
+                    "• Set up file watching in the Watcher tab\n"
+                    "• Get Slack notifications for all sync operations\n"
+                    "• Test your configuration anytime"
+                )
+            else:
+                success_message = (
+                    "✅ Google Sheets API configuration saved successfully!\n\n"
+                    "Google Sheets API: ✅ Configured\n"
+                    "Slack Notifications: ⚪ Optional (not configured)\n\n"
+                    "You can now:\n"
+                    "• Use the Manual Sync tab to upload files\n"
+                    "• Set up file watching in the Watcher tab\n"
+                    "• Add Slack notifications later if needed\n"
+                    "• Test your configuration anytime"
+                )
+            
             QMessageBox.information(
                 self,
                 "Configuration Saved",
-                "✅ Google Sheets API configuration has been saved successfully!\n\n"
-                "You can now:\n"
-                "• Use the Manual Sync tab to upload files\n"
-                "• Set up file watching in the Watcher tab\n"
-                "• Test your configuration anytime"
+                success_message
             )
             
         except Exception as e:
@@ -689,6 +921,7 @@ class ConfigTab(QWidget):
         )
         
         if reply == QMessageBox.StandardButton.Yes:
+            # Reset Google Sheets fields
             self.project_id_input.clear()
             self.service_email_input.clear()
             self.private_key_id_input.clear()
@@ -696,6 +929,12 @@ class ConfigTab(QWidget):
             self.client_id_input.clear()
             self.spreadsheet_id_input.clear()
             self.worksheet_name_input.setText("Sheet1")
+            
+            # Reset Slack fields
+            self.slack_webhook_input.clear()
+            self.slack_channel_input.setText("#general")
+            self.slack_username_input.setText("Sheets-Bot")
+            self.slack_icon_input.setText(":robot_face:")
             
             self.test_result_label.clear()
             self.status_label.setText("📝 Fields reset - ready to configure Google Sheets API credentials")

@@ -21,11 +21,20 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtGui import QFont
 
-from ..core.parser import parse_file, UnsupportedFileTypeError
-from ..integrations.sheets_client import SheetsClient, SheetsPushError
-from ..core.delta import DeltaTracker
-from ..integrations.notifier import SlackNotifier
-from ..core.watcher import Watcher
+# Robust import with fallback for distributed environments
+try:
+    from ..core.parser import parse_file, UnsupportedFileTypeError
+    from ..integrations.sheets_client import SheetsClient, SheetsPushError
+    from ..core.delta import DeltaTracker
+    from ..integrations.notifier import SlackNotifier
+    from ..core.watcher import Watcher
+except ImportError:
+    # Fallback for distributed environments
+    from app.core.parser import parse_file, UnsupportedFileTypeError
+    from app.integrations.sheets_client import SheetsClient, SheetsPushError
+    from app.core.delta import DeltaTracker
+    from app.integrations.notifier import SlackNotifier
+    from app.core.watcher import Watcher
 
 
 class WatcherWorker(QThread):
